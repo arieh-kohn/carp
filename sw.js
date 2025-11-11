@@ -1,7 +1,7 @@
 const CACHE_NAME = 'carp-offline-v1';
 const ASSETS = [
   './',
-  'page.html',
+  'index.html',
   'account.html',
   'carpai.html',
   'carpai.js',
@@ -48,7 +48,7 @@ self.addEventListener('fetch', (event) => {
   if (event.request.mode === 'navigate') {
     event.respondWith(
       fetch(event.request)
-        .catch(() => caches.match('page.html'))
+        .catch(() => caches.match('index.html'))
     );
     return;
   }
@@ -65,7 +65,7 @@ self.addEventListener('fetch', (event) => {
             caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
             return response;
           })
-          .catch(() => caches.match('page.html'));
+          .catch(() => caches.match('index.html'));
       })
   );
 });

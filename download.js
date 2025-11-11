@@ -4,7 +4,7 @@
   const openBtn = document.getElementById('openOffline');
 
   const FILES_TO_PACKAGE = [
-    'page.html',
+    'index.html',
     'account.html',
     'carpai.html',
     'carpai.js',
@@ -38,7 +38,7 @@
   }
 
   openBtn.addEventListener('click', () => {
-    window.location.href = 'page.html#offline';
+    window.location.href = 'index.html#offline';
   });
 
   downloadBtn.addEventListener('click', () => {
