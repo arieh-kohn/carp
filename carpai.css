@@ -1,0 +1,338 @@
+body.page-carpai{
+  min-height:100vh;
+  margin:0;
+  font-family:var(--ui-font);
+  background:linear-gradient(180deg,var(--bg-1),var(--bg-2));
+  color:#e6f4ff;
+  display:flex;
+  flex-direction:column;
+  gap:24px;
+  padding:32px 16px 48px;
+}
+
+.page-carpai .ai-topbar{
+  width:min(1140px,100%);
+  margin:0 auto;
+  background:rgba(7,26,42,0.92);
+  border-radius:20px;
+  border:1px solid rgba(148,191,224,0.16);
+  padding:20px 24px;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:18px;
+  box-shadow:0 28px 54px rgba(5,12,23,0.45);
+}
+
+.page-carpai .brand h1{
+  margin:0;
+  font-size:30px;
+  font-weight:800;
+  letter-spacing:-0.4px;
+}
+
+.page-carpai .beta-pill{
+  display:inline-flex;
+  align-items:center;
+  padding:4px 12px;
+  margin-left:10px;
+  border-radius:999px;
+  font-size:11px;
+  letter-spacing:0.8px;
+  text-transform:uppercase;
+  background:rgba(16,185,129,0.18);
+  color:#6ee7b7;
+}
+
+.page-carpai .tagline{
+  margin:8px 0 0;
+  color:#9fb6c6;
+  font-size:14px;
+}
+
+.page-carpai .top-actions{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  align-items:flex-end;
+}
+
+.page-carpai nav{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+.page-carpai .chip{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 16px;
+  border-radius:999px;
+  background:rgba(255,255,255,0.08);
+  color:#e6f4ff;
+  font-size:13px;
+  font-weight:600;
+  text-decoration:none;
+  transition:transform .12s ease, background .12s ease;
+}
+
+.page-carpai .chip:hover{
+  background:rgba(255,255,255,0.18);
+  transform:translateY(-1px);
+}
+
+.page-carpai .btn{
+  border:1px solid rgba(148,191,224,0.3);
+  border-radius:12px;
+  padding:8px 14px;
+  background:rgba(255,255,255,0.05);
+  color:#e6f4ff;
+  font-weight:600;
+  cursor:pointer;
+  transition:transform .12s ease, box-shadow .12s ease, background .12s ease;
+}
+
+.page-carpai .btn:hover{
+  background:rgba(255,255,255,0.12);
+  transform:translateY(-1px);
+}
+
+.page-carpai .btn.primary{
+  background:linear-gradient(135deg,#0ea5ff,#38bdf8);
+  color:#042033;
+  border:0;
+  box-shadow:0 18px 32px rgba(14,165,233,0.35);
+}
+
+.page-carpai .btn.primary:hover{
+  transform:translateY(-2px);
+  box-shadow:0 22px 36px rgba(14,165,233,0.4);
+}
+
+.page-carpai .btn.secondary{
+  background:rgba(255,255,255,0.08);
+  color:#e6f4ff;
+}
+
+.page-carpai .btn.ghost{
+  background:transparent;
+  color:#9fc9eb;
+}
+
+.page-carpai .ai-layout{
+  width:min(1140px,100%);
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:260px minmax(0,1fr) 260px;
+  gap:20px;
+  align-items:start;
+}
+
+.page-carpai .card{
+  background:rgba(7,26,42,0.88);
+  border-radius:20px;
+  border:1px solid rgba(148,191,224,0.16);
+  padding:20px;
+  box-shadow:0 26px 50px rgba(5,12,23,0.4);
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.page-carpai .ai-sidebar,
+.page-carpai .ai-right{
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+}
+
+.page-carpai .prompt-card h2,
+.page-carpai .tips-card h2,
+.page-carpai .knowledge-card h2{
+  margin:0;
+  font-size:18px;
+  font-weight:800;
+}
+
+.page-carpai .prompt-list{
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.page-carpai .prompt-btn{
+  width:100%;
+  text-align:left;
+  border:0;
+  border-radius:12px;
+  padding:10px 14px;
+  background:rgba(255,255,255,0.06);
+  color:#dae8ff;
+  font-weight:600;
+  cursor:pointer;
+  transition:transform .12s ease, background .12s ease;
+}
+
+.page-carpai .prompt-btn:hover{
+  background:rgba(255,255,255,0.12);
+  transform:translateY(-1px);
+}
+
+.page-carpai .tips-card ul{
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  color:#9fb6c6;
+  font-size:13px;
+}
+
+.page-carpai .knowledge-card dl{
+  margin:0;
+  display:grid;
+  gap:10px;
+}
+
+.page-carpai .knowledge-card dt{
+  font-weight:700;
+  color:#e6f4ff;
+}
+
+.page-carpai .knowledge-card dd{
+  margin:4px 0 0;
+  color:#9fb6c6;
+  font-size:13px;
+}
+
+.page-carpai .ai-chat{
+  min-height:520px;
+  padding:24px;
+  gap:20px;
+  display:flex;
+  flex-direction:column;
+}
+
+.page-carpai .typing{
+  font-size:13px;
+  color:#9fb6c6;
+}
+
+.page-carpai .typing.hidden{
+  display:none;
+}
+
+.page-carpai .chat-log{
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  overflow-y:auto;
+  max-height:520px;
+}
+
+.page-carpai .message{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.page-carpai .message .bubble{
+  background:linear-gradient(135deg,rgba(14,165,233,0.18),rgba(8,27,43,0.85));
+  border-radius:16px;
+  padding:14px 16px;
+  color:#eaf5ff;
+  line-height:1.6;
+  box-shadow:0 18px 32px rgba(3,10,18,0.46);
+}
+
+.page-carpai .message.bot .bubble{
+  background:rgba(59,130,246,0.2);
+  border:1px solid rgba(148,191,224,0.24);
+}
+
+.page-carpai .message time{
+  font-size:12px;
+  color:#8fa6bc;
+}
+
+.page-carpai .chat-form{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.page-carpai .chat-form input{
+  background:rgba(7,26,42,0.85);
+  border:1px solid rgba(148,191,224,0.2);
+  border-radius:12px;
+  padding:12px 14px;
+  color:#f6fbff;
+  font-size:16px;
+  outline:none;
+}
+
+.page-carpai .chat-form input:focus{
+  border-color:#0ea5ff;
+  box-shadow:0 0 0 2px rgba(14,165,233,0.25);
+}
+
+.page-carpai .form-actions{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.page-carpai .chat-link{
+  display:inline-block;
+  margin-top:8px;
+  color:#8ed8ff;
+  text-decoration:none;
+  font-weight:600;
+}
+
+.page-carpai .chat-link:hover{
+  text-decoration:underline;
+}
+
+@media (max-width:1040px){
+  .page-carpai .ai-layout{
+    grid-template-columns:1fr;
+  }
+  .page-carpai .ai-right,
+  .page-carpai .ai-sidebar{
+    order:1;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:16px;
+  }
+  .page-carpai .ai-chat{
+    order:0;
+  }
+}
+
+@media (max-width:720px){
+  body.page-carpai{
+    padding:24px 12px 36px;
+  }
+  .page-carpai .ai-topbar{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+  .page-carpai .top-actions{
+    align-items:flex-start;
+  }
+  .page-carpai .form-actions{
+    flex-direction:column;
+    align-items:stretch;
+  }
+}

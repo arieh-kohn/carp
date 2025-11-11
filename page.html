@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>carp.edu</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="offline.js" defer></script>
+</head>
+<body class="page-home">
+  <div class="page">
+    <div class="topbar">
+      <a class="top-btn" href="account.html">acount mange ment</a>
+      <a class="top-btn" href="social.html">social feed</a>
+      <a class="top-btn" href="carpai.html">carp ai</a>
+      <a class="top-btn" href="settings.html">settings</a>
+    </div>
+
+    <section class="big-banner" aria-hidden="false">
+      <div class="big-top">welcome to carp</div>
+      <div class="big-bottom" id="bannerMessage">make a acount</div>
+    </section>
+
+    <div class="bottom-row" aria-label="five small banners">
+      <a class="small-banner" href="carpfish.html" target="_self">carpfish games</a>
+      <a class="small-banner" href="social.html" target="_self">social feed</a>
+      <a class="small-banner" href="carpai.html" target="_self">carp ai</a>
+      <a class="small-banner" href="chats.html" target="_self">private chats</a>
+      <a class="small-banner" href="download.html" target="_self" rel="noopener">offline setup</a>
+    </div>
+  </div>
+  <script>
+    (function () {
+      try {
+        if (!sessionStorage.getItem('offline.autoOpened')) {
+          sessionStorage.setItem('offline.autoOpened', '1');
+          window.location.replace('download.html');
+        }
+      } catch (err) {
+        console.error('Auto-open failed', err);
+      }
+    })();
+  </script>
+  <script>
+    (function () {
+      try {
+        const saved = localStorage.getItem('social.account');
+        if (!saved) return;
+        const account = JSON.parse(saved);
+        if (account && (account.username || account.email)) {
+          const banner = document.getElementById('bannerMessage');
+          if (banner) banner.textContent = 'have a good time';
+        }
+      } catch (err) {
+        console.error('Account detection failed', err);
+      }
+    })();
+  </script>
+</body>
+</html>

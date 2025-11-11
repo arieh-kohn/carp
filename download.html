@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Carp Offline Pack</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="offline.js" defer></script>
+</head>
+<body class="page-offline">
+  <main class="offline-card">
+    <header>
+      <h1>Carp Offline Setup</h1>
+      <p class="subtitle">We cache everything for you so Carp keeps working without internet.</p>
+    </header>
+
+    <section class="offline-section">
+      <h2>Offline Toolkit</h2>
+      <p class="muted">We are packing every page, style, and game into a handy zip file. Once it lands on your device, open it to browse totally offline.</p>
+      <div class="action-row">
+        <button id="downloadZip" class="offline-btn primary">Download full site</button>
+        <button id="openOffline" class="offline-btn secondary">Open cached site</button>
+      </div>
+      <p id="statusMessage" class="status-text" data-offline-status>Preparing offline mode…</p>
+    </section>
+
+    <section class="offline-section">
+      <h2>Quick tips</h2>
+      <ul class="offline-list">
+        <li>Use <strong>Open cached site</strong> after the cache finishes to jump right into the offline copy.</li>
+        <li>If your browser supports it, choose “Install App / Add to Home Screen” for a one-tap experience.</li>
+        <li>Re-run this page any time we add new content so your offline package stays fresh.</li>
+      </ul>
+    </section>
+  </main>
+
+  <script src="download.js" defer></script>
+</body>
+</html>

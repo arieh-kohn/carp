@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Account Management</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="page-account">
+  <div class="account-shell">
+    <header class="account-header">
+      <div class="page-number">1</div>
+      <a class="page-link" href="page.html">Back</a>
+    </header>
+
+    <main class="account-main">
+      <section class="card account-form-card">
+        <h1>Create Your Account</h1>
+        <p class="account-subtext">Complete the form so we can save your profile and posts.</p>
+        <form id="accountForm" novalidate>
+          <div class="field-grid">
+            <label class="field">
+              <span>First Name</span>
+              <input type="text" name="firstName" required autocomplete="given-name" />
+            </label>
+            <label class="field">
+              <span>Last Name</span>
+              <input type="text" name="lastName" required autocomplete="family-name" />
+            </label>
+          </div>
+          <label class="field">
+            <span>Username</span>
+            <input type="text" name="username" required minlength="3" autocomplete="username" />
+          </label>
+          <label class="field">
+            <span>Email</span>
+            <input type="email" name="email" required autocomplete="email" />
+          </label>
+          <label class="field">
+            <span>Profile Picture (optional)</span>
+            <input type="file" name="avatar" accept="image/*" />
+          </label>
+          <button type="submit" class="btn primary">Create Account</button>
+          <p id="accountStatus" class="account-status" role="status" aria-live="polite"></p>
+        </form>
+        <div id="profilePreview" class="profile-preview" hidden>
+          <img id="profileAvatar" alt="Profile preview" />
+          <div class="profile-preview-info">
+            <div id="profileName"></div>
+            <div id="profileEmail"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card account-posts-card" aria-live="polite">
+        <div class="posts-header">
+          <h2>Your Posts</h2>
+          <button id="clearPosts" class="btn subtle" type="button" disabled>Clear All</button>
+        </div>
+        <form id="postForm" class="post-form" hidden>
+          <label class="field">
+            <span>Share something with your friends</span>
+            <textarea name="postBody" rows="3" maxlength="500" required placeholder="Write a caption or thought..."></textarea>
+          </label>
+          <button type="submit" class="btn primary">Add Post</button>
+        </form>
+        <ul id="postList" class="post-list" aria-label="Saved posts"></ul>
+        <p id="noPostsHint" class="hint">Create an account and start sharing to see your posts here.</p>
+      </section>
+
+      <section class="card account-db-card" aria-live="polite">
+        <div class="posts-header">
+          <h2>Account Directory</h2>
+          <button id="refreshAccounts" class="btn subtle" type="button">Refresh</button>
+        </div>
+        <ul id="accountsList" class="account-list" aria-label="Accounts"></ul>
+        <p id="accountsEmpty" class="hint">No accounts stored yet.</p>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      const storageKeys = {
+        account: 'social.account',
+        posts: 'social.posts',
+        accountsDb: 'social.accounts'
+      };
+
+      const accountForm = document.getElementById('accountForm');
+      const statusEl = document.getElementById('accountStatus');
+      const postForm = document.getElementById('postForm');
+      const postList = document.getElementById('postList');
+      const clearPostsBtn = document.getElementById('clearPosts');
+      const noPostsHint = document.getElementById('noPostsHint');
+      const avatarInput = accountForm.querySelector('input[name="avatar"]');
+      const profilePreview = document.getElementById('profilePreview');
+      const profileAvatar = document.getElementById('profileAvatar');
+      const profileName = document.getElementById('profileName');
+      const profileEmail = document.getElementById('profileEmail');
+      const accountsList = document.getElementById('accountsList');
+      const accountsEmpty = document.getElementById('accountsEmpty');
+      const refreshAccountsBtn = document.getElementById('refreshAccounts');
+
+      function readStorage(key, fallback) {
+        try {
+          const raw = localStorage.getItem(key);
+          if (!raw) return fallback;
+          return JSON.parse(raw);
+        } catch (err) {
+          console.error('Storage read failed', err);
+          return fallback;
+        }
+      }
+
+      function writeStorage(key, value) {
+        try {
+          localStorage.setItem(key, JSON.stringify(value));
+        } catch (err) {
+          console.error('Storage write failed', err);
+        }
+      }
+
+      function updateAccountsDb(account) {
+        const db = readStorage(storageKeys.accountsDb, {});
+        db[account.id] = account;
+        writeStorage(storageKeys.accountsDb, db);
+      }
+
+      function readAccountsDb() {
+        return readStorage(storageKeys.accountsDb, {});
+      }
+
+      function getAccountId(account) {
+        if (!account) return null;
+        const key = (account.id || account.email || account.username || '').trim().toLowerCase();
+        return key || null;
+      }
+
+      function getAccountLabel(account) {
+        if (!account) return 'Member';
+        const fullName = [account.firstName, account.lastName].filter(Boolean).join(' ').trim();
+        return account.username || fullName || account.email || 'Member';
+      }
+
+      function togglePostUI(enabled) {
+        postForm.hidden = !enabled;
+        clearPostsBtn.disabled = !enabled;
+        if (enabled) {
+          statusEl.classList.remove('error');
+          statusEl.textContent = 'Account ready! Start sharing below.';
+          if (!postList.children.length) {
+            noPostsHint.hidden = false;
+            noPostsHint.textContent = 'No posts yet. Share something to get started!';
+          }
+        }
+      }
+
+      function renderProfilePreview(account) {
+        if (!profilePreview || !profileName || !profileEmail || !profileAvatar) return;
+        if (!account) {
+          profilePreview.hidden = true;
+          return;
+        }
+        profileName.textContent = getAccountLabel(account);
+        profileEmail.textContent = account.email || '';
+        if (account.avatar) {
+          profileAvatar.src = account.avatar;
+          profileAvatar.hidden = false;
+        } else {
+          profileAvatar.removeAttribute('src');
+          profileAvatar.hidden = true;
+        }
+        profilePreview.hidden = false;
+      }
+
+      function readFileAsDataUrl(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = () => reject(reader.error);
+          reader.readAsDataURL(file);
+        });
+      }
+
+      function renderAccountsList() {
+        if (!accountsList || !accountsEmpty) return;
+        const db = readAccountsDb();
+        const accounts = Object.values(db);
+        accountsList.innerHTML = '';
+        if (!accounts.length) {
+          accountsEmpty.hidden = false;
+          return;
+        }
+        accountsEmpty.hidden = true;
+        accounts.sort((a, b) => (a.username || '').localeCompare(b.username || ''));
+        accounts.forEach(account => {
+          const li = document.createElement('li');
+          li.className = 'account-entry';
+
+          const avatar = document.createElement('img');
+          avatar.className = 'account-entry-avatar';
+          if (account.avatar) {
+            avatar.src = account.avatar;
+            avatar.alt = account.username || 'Account avatar';
+          } else {
+            avatar.src = '';
+            avatar.alt = '';
+            avatar.classList.add('placeholder');
+          }
+
+          const body = document.createElement('div');
+          body.className = 'account-entry-body';
+
+          const title = document.createElement('div');
+          title.className = 'account-entry-name';
+          title.textContent = getAccountLabel(account);
+
+          const meta = document.createElement('div');
+          meta.className = 'account-entry-meta';
+          meta.textContent = [account.username, account.email].filter(Boolean).join(' • ');
+
+          body.appendChild(title);
+          body.appendChild(meta);
+          li.appendChild(avatar);
+          li.appendChild(body);
+          accountsList.appendChild(li);
+        });
+      }
+
+      function renderPosts(posts) {
+        postList.innerHTML = '';
+        const account = readStorage(storageKeys.account, null);
+        const accountId = getAccountId(account);
+
+        if (!accountId) {
+          noPostsHint.hidden = false;
+          noPostsHint.textContent = 'Create an account to manage your posts.';
+          clearPostsBtn.disabled = true;
+          return;
+        }
+
+        const entries = posts
+          .map((post, idx) => ({ post, idx }))
+          .filter(entry => (entry.post.ownerId || accountId) === accountId);
+
+        if (!entries.length) {
+          noPostsHint.hidden = false;
+          clearPostsBtn.disabled = true;
+          return;
+        }
+
+        noPostsHint.hidden = true;
+        clearPostsBtn.disabled = false;
+
+        entries.forEach(({ post, idx }) => {
+          const item = document.createElement('li');
+          item.className = 'post-item';
+
+          const header = document.createElement('div');
+          header.className = 'post-meta';
+          const ownerLabel = post.ownerName || getAccountLabel(account);
+          header.textContent = new Date(post.createdAt).toLocaleString() + ' • ' + ownerLabel;
+
+          const body = document.createElement('p');
+          body.className = 'post-body';
+          body.textContent = post.body;
+
+          const actions = document.createElement('div');
+          actions.className = 'post-actions';
+
+          const likeBtn = document.createElement('button');
+          likeBtn.type = 'button';
+          likeBtn.className = 'btn tiny';
+          likeBtn.textContent = '\u2764\uFE0F ' + (post.likes || 0);
+          likeBtn.addEventListener('click', () => {
+            posts[idx].likes = (posts[idx].likes || 0) + 1;
+            writeStorage(storageKeys.posts, posts);
+            renderPosts(posts);
+          });
+
+          const deleteBtn = document.createElement('button');
+          deleteBtn.type = 'button';
+          deleteBtn.className = 'btn tiny danger';
+          deleteBtn.textContent = 'Delete';
+          deleteBtn.addEventListener('click', () => {
+            posts.splice(idx, 1);
+            writeStorage(storageKeys.posts, posts);
+            renderPosts(posts);
+          });
+
+          actions.appendChild(likeBtn);
+          actions.appendChild(deleteBtn);
+
+          item.appendChild(header);
+          item.appendChild(body);
+          item.appendChild(actions);
+          postList.appendChild(item);
+        });
+      }
+
+      function initAccount() {
+        let savedAccount = readStorage(storageKeys.account, null);
+        const accountId = getAccountId(savedAccount);
+
+        if (savedAccount && accountId && !savedAccount.id) {
+          savedAccount.id = accountId;
+          writeStorage(storageKeys.account, savedAccount);
+        }
+
+        if (savedAccount) {
+          accountForm.firstName.value = savedAccount.firstName || '';
+          accountForm.lastName.value = savedAccount.lastName || '';
+          accountForm.username.value = savedAccount.username || '';
+          accountForm.email.value = savedAccount.email || '';
+          statusEl.textContent = 'Welcome back, ' + getAccountLabel(savedAccount) + '!';
+          togglePostUI(true);
+          updateAccountsDb(savedAccount);
+          renderProfilePreview(savedAccount);
+        } else {
+          togglePostUI(false);
+          renderProfilePreview(null);
+        }
+
+        const savedPosts = readStorage(storageKeys.posts, []);
+        if (accountId) {
+          let mutated = false;
+          const savedLabel = savedAccount ? getAccountLabel(savedAccount) : null;
+          const savedAvatar = savedAccount && savedAccount.avatar ? savedAccount.avatar : null;
+          savedPosts.forEach(post => {
+            if (!post.ownerId) {
+              post.ownerId = accountId;
+              mutated = true;
+            }
+            if (!post.ownerName && savedLabel) {
+              post.ownerName = savedLabel;
+              mutated = true;
+            }
+            if (!post.ownerAvatar && savedAvatar) {
+              post.ownerAvatar = savedAvatar;
+              mutated = true;
+            }
+          });
+          if (mutated) writeStorage(storageKeys.posts, savedPosts);
+        }
+        renderPosts(savedPosts);
+        if (savedAccount && savedPosts.length) noPostsHint.hidden = true;
+        renderAccountsList();
+      }
+
+      accountForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const formData = new FormData(accountForm);
+        const account = {
+          firstName: formData.get('firstName').trim(),
+          lastName: formData.get('lastName').trim(),
+          username: formData.get('username').trim(),
+          email: formData.get('email').trim()
+        };
+        account.id = getAccountId(account);
+
+        if (!account.firstName || !account.lastName || !account.username || !account.email || !account.id) {
+          statusEl.textContent = 'Please fill in every field to continue.';
+          statusEl.classList.add('error');
+          return;
+        }
+
+        const existingAccount = readStorage(storageKeys.account, null);
+        let avatar = existingAccount && existingAccount.avatar ? existingAccount.avatar : null;
+
+        if (avatarInput && avatarInput.files && avatarInput.files[0]) {
+          try {
+            avatar = await readFileAsDataUrl(avatarInput.files[0]);
+          } catch (err) {
+            console.error('Avatar read failed', err);
+            statusEl.textContent = 'Could not read the selected profile picture.';
+            statusEl.classList.add('error');
+            return;
+          }
+        }
+        if (avatarInput) avatarInput.value = '';
+        account.avatar = avatar;
+
+        statusEl.classList.remove('error');
+        writeStorage(storageKeys.account, account);
+        updateAccountsDb(account);
+        togglePostUI(true);
+        statusEl.textContent = 'Account saved. Hi, ' + getAccountLabel(account) + '!';
+        renderProfilePreview(account);
+        renderPosts(readStorage(storageKeys.posts, []));
+        renderAccountsList();
+      });
+
+      postForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const account = readStorage(storageKeys.account, null);
+        const accountId = getAccountId(account);
+        if (!accountId) {
+          statusEl.textContent = 'Create an account before posting.';
+          statusEl.classList.add('error');
+          return;
+        }
+
+        statusEl.classList.remove('error');
+
+        const textarea = postForm.postBody;
+        const body = textarea.value.trim();
+        if (!body) return;
+
+        const posts = readStorage(storageKeys.posts, []);
+        posts.unshift({
+          id: 'account-post-' + Date.now(),
+          body,
+          createdAt: Date.now(),
+          likes: 0,
+          ownerId: accountId,
+          ownerName: getAccountLabel(account),
+          ownerAvatar: account && account.avatar ? account.avatar : null
+        });
+        writeStorage(storageKeys.posts, posts);
+        textarea.value = '';
+        renderPosts(posts);
+      });
+
+      clearPostsBtn.addEventListener('click', () => {
+        const account = readStorage(storageKeys.account, null);
+        const accountId = getAccountId(account);
+        if (!accountId) return;
+        if (!confirm('Remove all of your saved posts?')) return;
+        const posts = readStorage(storageKeys.posts, []);
+        const remaining = posts.filter(post => (post.ownerId || accountId) !== accountId);
+        writeStorage(storageKeys.posts, remaining);
+        renderPosts(remaining);
+      });
+
+      if (refreshAccountsBtn) {
+        refreshAccountsBtn.addEventListener('click', () => renderAccountsList());
+      }
+
+      initAccount();
+    })();
+  </script>
+</body>
+</html>

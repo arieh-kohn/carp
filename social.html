@@ -1,0 +1,140 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CarpStream Viewer</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="page-social">
+  <header class="stream-topbar">
+    <div class="brand">
+      <span class="logo-dot" aria-hidden="true"></span>
+      <div>
+        <h1>CarpStream</h1>
+        <p class="tagline">Jump into every Carp post fullscreen with instant reactions.</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <nav aria-label="Main navigation">
+        <a href="page.html" class="chip">home</a>
+        <a href="account.html" class="chip">account</a>
+        <a href="carpfish.html" class="chip">games</a>
+        <a href="settings.html" class="chip">settings</a>
+      </nav>
+      <button class="btn primary" id="openComposer" type="button">+ New post</button>
+    </div>
+  </header>
+
+  <main class="stream-main">
+    <section class="viewer" id="viewer">
+      <div class="viewer-media" id="viewerMedia">
+        <div class="viewer-empty" id="viewerEmpty">
+          Select a clip or photo from the list to start watching.
+        </div>
+      </div>
+      <div class="viewer-panel">
+        <div class="viewer-header">
+          <div class="viewer-meta">
+            <span class="viewer-author" id="viewerAuthor"></span>
+            <time id="viewerTime"></time>
+          </div>
+          <div class="viewer-controls">
+            <button class="btn accent" id="fullscreenAction" type="button">Fullscreen</button>
+          </div>
+        </div>
+        <p class="viewer-caption" id="viewerCaption"></p>
+        <div class="viewer-actions">
+          <button class="action-btn" id="likeAction" type="button" aria-label="Like post">
+            <span class="icon" aria-hidden="true">&#x2764;</span>
+            <span id="likeCount">0</span>
+          </button>
+          <button class="action-btn" id="dislikeAction" type="button" aria-label="Dislike post">
+            <span class="icon" aria-hidden="true">&#x2716;</span>
+            <span id="dislikeCount">0</span>
+          </button>
+          <button class="action-btn" id="repostAction" type="button" aria-label="Repost">
+            <span class="icon" aria-hidden="true">&#x21ba;</span>
+            <span id="repostCount">0</span>
+          </button>
+          <button class="action-btn" id="shareAction" type="button" aria-label="Share post">
+            <span class="icon" aria-hidden="true">&#x21aa;</span>
+            <span class="label">Share</span>
+          </button>
+          <button class="action-btn delete" id="deleteAction" type="button">Delete</button>
+        </div>
+        <ul class="comment-list" id="commentList"></ul>
+        <form id="commentForm" class="comment-form" autocomplete="off">
+          <input type="text" id="commentInput" name="comment" placeholder="Add a comment…" maxlength="200" required />
+          <button type="submit" class="btn secondary">Comment</button>
+        </form>
+      </section>
+    </section>
+
+    <aside class="queue">
+      <div class="queue-header">
+        <h2>All posts</h2>
+        <button class="btn ghost" id="openComposerRail" type="button">+ New</button>
+      </div>
+      <div class="queue-stats">
+        <div class="stat">
+          <span>Today's posts</span>
+          <strong id="todayCount">0</strong>
+        </div>
+        <div class="stat">
+          <span>Total likes</span>
+          <strong id="totalLikes">0</strong>
+        </div>
+      </div>
+      <ul class="post-rail" id="postRail" aria-label="Post list"></ul>
+    </aside>
+  </main>
+
+  <div class="composer-overlay hidden" id="composerOverlay" role="dialog" aria-modal="true">
+    <section class="composer-panel">
+      <header class="composer-header">
+        <h2>Create a post</h2>
+        <button class="btn ghost close" type="button" id="closeComposer">Close</button>
+      </header>
+      <form id="composerForm" class="composer-form" novalidate>
+        <label class="field">
+          <span>Caption</span>
+          <textarea id="composerCaption" name="caption" rows="3" maxlength="280" placeholder="What's happening?" required></textarea>
+        </label>
+
+        <label class="field">
+          <span>Media file</span>
+          <input type="file" id="composerFile" name="mediaFile" accept="video/*,image/*" />
+          <small class="hint">Optional: mp4, mov, webm, png, jpg, gif (max 5MB).</small>
+        </label>
+
+        <div class="divider"><span>or</span></div>
+
+        <label class="field">
+          <span>Media URL</span>
+          <input type="url" id="composerUrl" name="mediaUrl" placeholder="https:// (YouTube, image link, etc.)" />
+          <small class="hint">Leave blank for text-only posts.</small>
+        </label>
+
+        <div class="media-preview hidden" id="composerPreview">
+          <div class="thumb" id="composerThumb" aria-hidden="true"></div>
+          <div>
+            <p id="composerFileName"></p>
+            <button class="btn tiny ghost" type="button" id="clearComposerFile">Remove file</button>
+          </div>
+        </div>
+
+        <p id="composerStatus" class="composer-status" role="status" aria-live="assertive"></p>
+
+        <footer class="composer-actions">
+          <button type="button" class="btn ghost" id="cancelComposer">Cancel</button>
+          <button type="submit">Post</button>
+        </footer>
+      </form>
+    </section>
+  </div>
+
+  <script src="social.js" defer></script>
+</body>
+</html>
+

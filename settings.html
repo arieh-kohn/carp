@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Carp Settings</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="offline.js" defer></script>
+</head>
+<body class="page-settings">
+  <div class="settings-shell">
+    <header class="settings-header">
+      <div>
+        <h1>Settings</h1>
+        <p class="subtitle">Tune Carp to fit your vibe — update your account, control privacy, and customize themes.</p>
+      </div>
+      <a class="btn tertiary" href="page.html">Back to Home</a>
+    </header>
+
+    <div class="settings-grid">
+      <section class="settings-card">
+        <header>
+          <h2>Profile</h2>
+          <p>Update your display name and contact info.</p>
+        </header>
+        <form id="profileForm" autocomplete="off">
+          <label>
+            <span>Display name</span>
+            <input type="text" id="profileName" maxlength="24" />
+          </label>
+          <label>
+            <span>Email</span>
+            <input type="email" id="profileEmail" maxlength="60" />
+          </label>
+          <label>
+            <span>Status message</span>
+            <textarea id="profileStatus" rows="2" maxlength="120"></textarea>
+          </label>
+          <div class="actions">
+            <button type="submit" class="btn primary">Save profile</button>
+            <span class="note" id="profileNote"></span>
+          </div>
+        </form>
+      </section>
+
+      <section class="settings-card">
+        <header>
+          <h2>Privacy &amp; Safety</h2>
+          <p>Control who can find you and what you share.</p>
+        </header>
+        <form id="privacyForm">
+          <label class="toggle">
+            <input type="checkbox" id="privacyDiscoverable" />
+            <span class="slider"></span>
+            <div>
+              <strong>Allow friend discovery</strong>
+              <small>Let others search your username.</small>
+            </div>
+          </label>
+          <label class="toggle">
+            <input type="checkbox" id="privacyPublicFeed" />
+            <span class="slider"></span>
+            <div>
+              <strong>Show posts on public feed</strong>
+              <small>Uncheck to keep your posts private.</small>
+            </div>
+          </label>
+          <label class="toggle">
+            <input type="checkbox" id="privacyRoomInvites" />
+            <span class="slider"></span>
+            <div>
+              <strong>Allow invite requests</strong>
+              <small>Friends can send you private room invites.</small>
+            </div>
+          </label>
+          <div class="actions">
+            <button type="submit" class="btn primary">Save privacy</button>
+            <span class="note" id="privacyNote"></span>
+          </div>
+        </form>
+      </section>
+
+      <section class="settings-card">
+        <header>
+          <h2>Appearance</h2>
+          <p>Switch themes and interface tweaks.</p>
+        </header>
+        <form id="appearanceForm">
+          <label>
+            <span>Theme</span>
+            <select id="themeChoice">
+              <option value="ocean">Ocean deep</option>
+              <option value="sunset">Sunset glow</option>
+              <option value="forest">Forest mist</option>
+            </select>
+          </label>
+          <label class="toggle">
+            <input type="checkbox" id="appearanceAnimations" checked />
+            <span class="slider"></span>
+            <div>
+              <strong>Motion effects</strong>
+              <small>Disable if you prefer a calm experience.</small>
+            </div>
+          </label>
+          <label class="toggle">
+            <input type="checkbox" id="appearanceHighContrast" />
+            <span class="slider"></span>
+            <div>
+              <strong>High contrast text</strong>
+              <small>Boost readability across the site.</small>
+            </div>
+          </label>
+          <div class="actions">
+            <button type="submit" class="btn primary">Save appearance</button>
+            <span class="note" id="appearanceNote"></span>
+          </div>
+        </form>
+      </section>
+
+      <section class="settings-card">
+        <header>
+          <h2>Security</h2>
+          <p>Keep your account locked down.</p>
+        </header>
+        <form id="securityForm" autocomplete="off">
+          <label>
+            <span>Current password</span>
+            <input type="password" id="currentPassword" autocomplete="new-password" />
+          </label>
+          <label>
+            <span>New password</span>
+            <input type="password" id="newPassword" autocomplete="new-password" />
+          </label>
+          <label>
+            <span>Confirm new password</span>
+            <input type="password" id="confirmPassword" autocomplete="new-password" />
+          </label>
+          <div class="actions">
+            <button type="submit" class="btn primary">Update password</button>
+            <span class="note" id="securityNote"></span>
+          </div>
+        </form>
+      </section>
+
+      <section class="settings-card">
+        <header>
+          <h2>Downloads &amp; storage</h2>
+          <p>Manage offline data and exports.</p>
+        </header>
+        <div class="storage-actions">
+          <button class="btn secondary" id="refreshOffline">Refresh offline cache</button>
+          <button class="btn secondary" id="clearOffline">Clear cached data</button>
+          <button class="btn secondary" id="exportData">Export my data</button>
+        </div>
+        <p class="storage-status note" id="storageNote">Offline cache last updated: <span id="offlineUpdated">never</span></p>
+      </section>
+    </div>
+  </div>
+
+  <script src="settings.js" defer></script>
+</body>
+</html>

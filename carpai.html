@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Carp AI Assistant</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="carpai.css" />
+  <script src="offline.js" defer></script>
+</head>
+<body class="page-carpai">
+  <header class="ai-topbar">
+    <div class="brand">
+      <h1>Carp AI <span class="beta-pill">Beta</span></h1>
+      <p class="tagline">Need a pointer? Ask about games, your account, posting, or anything Carp.</p>
+    </div>
+    <div class="top-actions">
+      <nav aria-label="Site navigation">
+        <a href="page.html" class="chip">home</a>
+        <a href="carpfish.html" class="chip">games</a>
+        <a href="social.html" class="chip">social</a>
+        <a href="settings.html" class="chip">settings</a>
+      </nav>
+      <button class="btn ghost" id="resetChat" type="button">Reset chat</button>
+    </div>
+  </header>
+
+  <main class="ai-layout">
+    <aside class="ai-sidebar">
+      <section class="card prompt-card">
+        <h2>Quick prompts</h2>
+        <ul class="prompt-list">
+          <li><button type="button" class="prompt-btn" data-prompt="Where do I play the CarpFish games?">Where do I play the CarpFish games?</button></li>
+          <li><button type="button" class="prompt-btn" data-prompt="How do I start posting to CarpStream?">How do I start posting to CarpStream?</button></li>
+          <li><button type="button" class="prompt-btn" data-prompt="Can I update my profile details?">Can I update my profile details?</button></li>
+          <li><button type="button" class="prompt-btn" data-prompt="Give me a fun Carp fact.">Give me a fun Carp fact.</button></li>
+        </ul>
+      </section>
+      <section class="card tips-card">
+        <h2>AI tips</h2>
+        <ul>
+          <li>Ask follow-ups to narrow down what you need.</li>
+          <li>Use reset if you want a fresh conversation.</li>
+          <li>The AI can link you to games, social tools, and settings.</li>
+        </ul>
+      </section>
+    </aside>
+
+    <section class="ai-chat card" aria-live="polite">
+      <div id="typingIndicator" class="typing hidden" role="status" aria-live="assertive">Carp AI is thinking…</div>
+      <ul id="chatLog" class="chat-log"></ul>
+      <form id="chatForm" class="chat-form" autocomplete="off">
+        <input aria-label="Ask Carp AI" id="chatInput" name="chatInput" placeholder="Ask me something…" required />
+        <div class="form-actions">
+          <button type="button" class="btn secondary" id="suggestBtn">Give me a suggestion</button>
+          <button type="submit" class="btn primary">Send</button>
+        </div>
+      </form>
+    </section>
+
+    <aside class="ai-right">
+      <section class="card knowledge-card">
+        <h2>What Carp AI knows</h2>
+        <dl>
+          <dt>Games &amp; entertainment</dt>
+          <dd>CarpFish classics, how to play, and new challenges.</dd>
+          <dt>Social &amp; sharing</dt>
+          <dd>Posting to CarpStream, managing uploads, and staying kind.</dd>
+          <dt>Accounts &amp; security</dt>
+          <dd>Profile updates, privacy knobs, and general safety.</dd>
+          <dt>Fun extras</dt>
+          <dd>Fish facts, light jokes, and helpful nudges.</dd>
+        </dl>
+      </section>
+    </aside>
+  </main>
+
+  <script src="carpai.js" defer></script>
+</body>
+</html>

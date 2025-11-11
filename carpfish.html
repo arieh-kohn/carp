@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Carpfish — Polished Mini Games</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body class="page-carpfish">
+  <div class="container">
+    <header>
+      <div>
+        <h1>Carpfish — Polished Mini Games</h1>
+        <div class="subtitle">Play directly in the page — improved visuals, controls and polish.</div>
+      </div>
+      <div class="controls">
+        <a href="page.html" class="btn">Home</a>
+        <button id="refreshBtn" class="small">Reload</button>
+        <button id="helpBtn" class="small">Help</button>
+      </div>
+    </header>
+
+    <main id="mainArea">
+      <div id="listView">
+        <div class="grid">
+          <div class="tile" id="tile-2048">
+            <div class="title">2048</div>
+            <div class="desc">Slide tiles to reach 2048 — improved look with spawn animation.</div>
+          </div>
+
+          <div class="tile" id="tile-snake">
+            <div class="title">Snake</div>
+            <div class="desc">Smooth movement, responsive controls and pause.</div>
+          </div>
+
+          <div class="tile" id="tile-breakout">
+            <div class="title">Breakout</div>
+            <div class="desc">Lives, progressive speed, polished collisions.</div>
+          </div>
+
+          <div class="tile" id="tile-memory">
+            <div class="title">Memory Match</div>
+            <div class="desc">3D flip animation and clean end-screen.</div>
+          </div>
+
+          <div class="tile" id="tile-whack">
+            <div class="title">Whack-a-Mole</div>
+            <div class="desc">Animated moles and countdown timer.</div>
+          </div>
+
+          <div class="tile" id="tile-flappy">
+            <div class="title">Flappy</div>
+            <div class="desc">Better physics and polished pipe generation.</div>
+          </div>
+
+          <div class="tile" id="tile-bitlife">
+            <div class="title">Life Sim</div>
+            <div class="desc">Make life choices and see how your story unfolds.</div>
+          </div>
+
+          <div class="tile" id="tile-drive">
+            <div class="title">Drive Mad</div>
+            <div class="desc">Guide the wobble-car across tricky bridges.</div>
+          </div>
+
+          <div class="tile" id="tile-ancient">
+            <div class="title">Ancient Beast</div>
+            <div class="desc">Turn-based creature battles with collectible summons.</div>
+          </div>
+
+          <div class="tile" id="tile-craft">
+            <div class="title">Block Craft</div>
+            <div class="desc">Build and craft in a miniature block world.</div>
+          </div>
+
+          <div class="tile" id="tile-runner">
+            <div class="title">Temple Run</div>
+            <div class="desc">Endless runner with obstacles and power-ups.</div>
+          </div>
+
+          <div class="tile" id="tile-candy">
+            <div class="title">Candy Match</div>
+            <div class="desc">Match colorful candies in this puzzle game.</div>
+          </div>
+
+          <div class="tile" id="tile-pacman">
+            <div class="title">Maze Chase</div>
+            <div class="desc">Navigate mazes while avoiding ghosts.</div>
+          </div>
+
+          <div class="tile" id="tile-tetris">
+            <div class="title">Block Drop</div>
+            <div class="desc">Classic block-falling puzzle game.</div>
+          </div>
+
+          <div class="tile" id="tile-words">
+            <div class="title">Word Quest</div>
+            <div class="desc">Find words in a grid of letters.</div>
+          </div>
+
+          <div class="tile" id="tile-piano">
+            <div class="title">Piano Tiles</div>
+            <div class="desc">Tap the black tiles in rhythm.</div>
+          </div>
+
+          <div class="tile" id="tile-bubble">
+            <div class="title">Bubble Pop</div>
+            <div class="desc">Shoot and match colorful bubbles.</div>
+          </div>
+
+          <div class="tile" id="tile-tower">
+            <div class="title">Tower Stack</div>
+            <div class="desc">Stack blocks to build the highest tower.</div>
+          </div>
+
+          <div class="tile" id="tile-race">
+            <div class="title">Speed Racer</div>
+            <div class="desc">Top-down racing with dynamic tracks.</div>
+          </div>
+
+          <div class="tile" id="tile-fruit">
+            <div class="title">Fruit Slice</div>
+            <div class="desc">Slice flying fruits, avoid bombs.</div>
+          </div>
+
+          <div class="tile" id="tile-defense">
+            <div class="title">Tower Defense</div>
+            <div class="desc">Strategic tower placement game.</div>
+          </div>
+
+          <div class="tile" id="tile-jump">
+            <div class="title">Doodle Jump</div>
+            <div class="desc">Jump on platforms, avoid obstacles.</div>
+          </div>
+
+          <div class="tile" id="tile-chess">
+            <div class="title">Mini Chess</div>
+            <div class="desc">Classic chess with AI opponent.</div>
+          </div>
+
+          <div class="tile" id="tile-cards">
+            <div class="title">Solitaire</div>
+            <div class="desc">Classic card game with animations.</div>
+          </div>
+        </div>
+
+        <div class="muted" style="margin-top:14px">Click a tile to load the game. Press Back to return to the list.
+          Restart reloads the current game.</div>
+      </div>
+
+      <div id="gameView" style="display:none">
+        <div class="backbar">
+          <div class="game-header">
+            <div class="game-title" id="gameTitle">Game</div>
+            <div style="width:10px"></div>
+            <div class="score-pill" id="scorePill">Score</div>
+          </div>
+          <div style="flex:1"></div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button id="restartBtn" class="btn">Restart</button>
+            <button id="backBtn" class="small">Back</button>
+            <a href="page.html" class="small">Home</a>
+          </div>
+        </div>
+
+        <div id="gameRoot" class="game-area game-root"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- help modal -->
+  <div id="helpModal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-panel">
+      <h3 style="margin-top:0">How to play</h3>
+      <ul>
+        <li>2048: arrow keys or swipe. Combine tiles.</li>
+        <li>Snake: arrow keys or swipe/touch. Avoid hitting yourself.</li>
+        <li>Breakout: move mouse/touch to control paddle.</li>
+        <li>Memory: click cards to reveal pairs.</li>
+        <li>Whack-a-Mole: tap moles quickly before time runs out.</li>
+        <li>Flappy: tap/click or Space to flap.</li>
+      </ul>
+      <div style="text-align:right;margin-top:8px"><button id="closeHelp" class="btn">Close</button></div>
+    </div>
+  </div>
+
+  <script src="scripts.js"></script>
+</body>
+
+</html>

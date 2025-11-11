@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Carp Chats</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="offline.js" defer></script>
+</head>
+<body class="page-chats">
+  <div class="chat-shell">
+    <header class="chat-header">
+      <div>
+        <h1>Carp Chats</h1>
+        <p class="subtitle">Hang in public rooms or start your own private space with friends.</p>
+      </div>
+      <div class="profile-chip" id="profileChip">Guest</div>
+    </header>
+
+    <div class="chat-layout">
+      <aside class="chat-sidebar">
+        <section class="chat-section">
+          <h2>Public lounges</h2>
+          <ul class="room-list" id="publicRoomList"></ul>
+        </section>
+        <section class="chat-section">
+          <h2>Your spaces</h2>
+          <ul class="room-list" id="privateRoomList"></ul>
+        </section>
+
+        <section class="chat-section">
+          <h2>Create a space</h2>
+          <form id="createRoomForm" autocomplete="off">
+            <label>
+              <span>Room name</span>
+              <input type="text" id="newRoomName" required maxlength="40" />
+            </label>
+            <label>
+              <span>Room type</span>
+              <select id="newRoomType">
+                <option value="public">Public</option>
+                <option value="private">Private</option>
+              </select>
+            </label>
+            <label>
+              <span>Description</span>
+              <textarea id="newRoomDesc" rows="2" maxlength="160"></textarea>
+            </label>
+            <label class="private-only hidden" id="codeLabel">
+              <span>Invite code (optional)</span>
+              <input type="text" id="newRoomCode" maxlength="12" placeholder="Leave blank for auto code" />
+            </label>
+            <button type="submit" class="btn primary">Create room</button>
+          </form>
+        </section>
+
+        <section class="chat-section">
+          <h2>Join private</h2>
+          <form id="joinRoomForm" autocomplete="off">
+            <label>
+              <span>Invite code</span>
+              <input type="text" id="joinCode" required maxlength="12" />
+            </label>
+            <button type="submit" class="btn secondary">Join room</button>
+            <p class="muted tiny">Ask a friend for the invite code or share one you created.</p>
+          </form>
+        </section>
+      </aside>
+
+      <main class="chat-main">
+        <section class="active-room" id="activeRoom" data-room="">
+          <header class="room-header">
+            <div>
+              <h2 id="roomTitle">Pick a room to start chatting</h2>
+              <p class="muted" id="roomMeta">No room selected.</p>
+            </div>
+            <div class="room-actions">
+              <span class="room-pill" id="roomTypePill">—</span>
+              <button class="btn small danger" id="leaveRoomBtn" disabled>Leave room</button>
+            </div>
+          </header>
+
+          <div class="chat-scroll" id="chatLog">
+            <div class="empty-chat">
+              <p>Pick a room on the left to see the conversation.</p>
+            </div>
+          </div>
+
+          <form class="chat-composer" id="messageForm">
+            <div class="attach-block">
+              <button type="button" class="btn secondary small" id="pickImage">Image</button>
+              <input type="file" id="messageFile" accept="image/*" class="hidden" />
+              <div class="image-preview hidden" id="imagePreview">
+                <img id="imagePreviewImg" alt="Selected attachment preview" />
+                <span class="tiny" id="imagePreviewName"></span>
+                <button type="button" class="btn tiny danger" id="clearImage">Remove</button>
+              </div>
+            </div>
+            <input type="text" id="messageInput" placeholder="Type a message…" autocomplete="off" />
+            <button type="submit" class="btn primary" disabled>Send</button>
+          </form>
+        </section>
+
+        <aside class="member-pane">
+          <header>
+            <h3>People here</h3>
+            <button class="btn tiny" id="refreshMembers">Refresh</button>
+          </header>
+          <ul class="member-list" id="memberList"></ul>
+          <div class="member-note muted">
+            Private spaces stay hidden unless someone invites you with the correct code.
+          </div>
+          <div class="invite-code" id="inviteCodeBlock" hidden>
+            <span class="label">Invite code</span>
+            <code id="inviteCodeValue"></code>
+            <button class="btn tiny" id="copyInvite">Copy</button>
+          </div>
+        </aside>
+      </main>
+    </div>
+  </div>
+
+  <template id="messageTemplate">
+    <li class="message">
+      <div class="bubble">
+        <header>
+          <span class="author"></span>
+          <time></time>
+        </header>
+        <p class="text"></p>
+        <div class="image-block hidden">
+          <img loading="lazy" alt="Chat attachment" />
+          <span class="caption tiny"></span>
+        </div>
+      </div>
+    </li>
+  </template>
+
+  <template id="roomTemplate">
+    <li>
+      <button class="room-btn">
+        <div class="room-name"></div>
+        <div class="room-desc muted tiny"></div>
+      </button>
+    </li>
+  </template>
+
+  <template id="memberTemplate">
+    <li>
+      <span class="dot"></span>
+      <span class="name"></span>
+    </li>
+  </template>
+
+  <script src="chats.js" defer></script>
+</body>
+</html>
