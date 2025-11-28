@@ -276,6 +276,15 @@
       const goalDescInput = document.getElementById('goalDescInput');
       const goalTargetInput = document.getElementById('goalTargetInput');
       const resetGoalBtn = document.getElementById('resetGoalBtn');
+      const packCostLabel = document.getElementById('packCostLabel');
+      const buyPackBtn = document.getElementById('buyPackBtn');
+      const packResult = document.getElementById('packResult');
+      const cardSummary = document.getElementById('cardSummary');
+      const cardCollectionList = document.getElementById('cardCollectionList');
+      const cardLevelBadge = document.getElementById('cardLevelBadge');
+      const cardLevelSubtitle = document.getElementById('cardLevelSubtitle');
+      const cardHistoryList = document.getElementById('cardHistory');
+      const levelButtons = document.querySelectorAll('.level-btn');
       const statusEl = document.getElementById('coinStatus');
 
       function readStorage(key, fallback) {
