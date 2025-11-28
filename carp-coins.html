@@ -47,8 +47,10 @@
           <strong id="planBadge" class="plan-badge">Free</strong>
           <p id="planHint" class="hint">Free plan cannot post.</p>
         </div>
-        <button id="activatePlan" class="btn primary" type="button">Activate paid plan (25 coins)</button>
+        <button id="activatePlan" class="btn primary" type="button">Browse plan shop</button>
       </div>
+      <div class="plan-grid" id="planGrid"></div>
+      <div class="perk-list" id="perkList"></div>
 
       <div class="currency-grid">
         <article class="currency-card">
@@ -189,6 +191,17 @@
         </div>
         <ul id="cardHistory" class="code-list"></ul>
       </article>
+
+      <article class="currency-card sound-card">
+        <div class="sound-card__header">
+          <div>
+            <h3>Soundboard</h3>
+            <p class="muted">Unlock custom sounds for 10 coins each.</p>
+          </div>
+          <span class="pill">10 CC / sound</span>
+        </div>
+        <ul id="soundList" class="sound-list"></ul>
+      </article>
     </section>
   </main>
 
@@ -295,6 +308,7 @@
       const cardLevelSubtitle = document.getElementById('cardLevelSubtitle');
       const cardHistoryList = document.getElementById('cardHistory');
       const levelButtons = document.querySelectorAll('.level-btn');
+      const soundList = document.getElementById('soundList');
       const statusEl = document.getElementById('coinStatus');
 
       function readStorage(key, fallback) {
@@ -573,6 +587,15 @@
         }
       }
 
+      function readUnlockedSounds() {
+        const list = readStorage(SOUND_STORAGE, []);
+        return Array.isArray(list) ? list : [];
+      }
+
+      function writeUnlockedSounds(list) {
+        writeStorage(SOUND_STORAGE, Array.from(new Set(list)));
+      }
+
       function updateCoinBalance(amount) {
         setCoinBalance(amount);
         renderCurrencyUI();
@@ -727,6 +750,44 @@
             goalHistoryList.appendChild(li);
           });
         }
+      }
+
+      function renderSoundboard() {
+        if (!soundList) return;
+        const unlocked = new Set(readUnlockedSounds());
+        soundList.innerHTML = '';
+        SOUND_CATALOG.forEach((sound) => {
+          const li = document.createElement('li');
+          li.className = 'sound-item';
+          const meta = document.createElement('div');
+          meta.className = 'sound-meta';
+          const title = document.createElement('strong');
+          title.textContent = sound.name;
+          const desc = document.createElement('p');
+          desc.textContent = sound.description;
+          meta.appendChild(title);
+          meta.appendChild(desc);
+          li.appendChild(meta);
+          const actions = document.createElement('div');
+          actions.className = 'sound-actions';
+          if (unlocked.has(sound.id)) {
+            const playBtn = document.createElement('button');
+            playBtn.className = 'btn secondary';
+            playBtn.type = 'button';
+            playBtn.textContent = 'Play';
+            playBtn.addEventListener('click', () => playTone(sound.frequency));
+            actions.appendChild(playBtn);
+          } else {
+            const buyBtn = document.createElement('button');
+            buyBtn.className = 'btn primary';
+            buyBtn.type = 'button';
+            buyBtn.textContent = 'Unlock (10 CC)';
+            buyBtn.addEventListener('click', () => buySound(sound.id));
+            actions.appendChild(buyBtn);
+          }
+          li.appendChild(actions);
+          soundList.appendChild(li);
+        });
       }
 
       function renderCardSection() {
@@ -1016,6 +1077,50 @@
 
       renderCurrencyUI();
       renderCardSection();
+      renderSoundboard();
+
+      function buySound(id) {
+        const sound = SOUND_CATALOG.find((item) => item.id === id);
+        if (!sound) return;
+        const unlocked = readUnlockedSounds();
+        if (unlocked.includes(id)) {
+          setStatus('Already unlocked.', false);
+          return;
+        }
+        try {
+          debitCoins(10, { type: 'sound', note: `Unlocked ${sound.name}`, message: '-10 CC' });
+        } catch (err) {
+          setStatus('Need 10 coins to unlock this sound.', true);
+          return;
+        }
+        unlocked.push(id);
+        writeUnlockedSounds(unlocked);
+        addHistoryEntry({ type: 'sound', delta: 0, note: `Unlocked ${sound.name}` });
+        setStatus(`${sound.name} unlocked!`);
+        renderSoundboard();
+      }
+
+      let audioCtx;
+      function playTone(freq) {
+        try {
+          if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          }
+          const duration = 0.5;
+          const oscillator = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          oscillator.type = 'triangle';
+          oscillator.frequency.value = freq;
+          oscillator.connect(gain);
+          gain.connect(audioCtx.destination);
+          gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+          oscillator.start();
+          oscillator.stop(audioCtx.currentTime + duration);
+        } catch (err) {
+          console.error('Audio failed', err);
+        }
+      }
     })();
   </script>
 </body>

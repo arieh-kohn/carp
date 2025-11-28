@@ -773,6 +773,91 @@ body.page-account .card-summary .pill[data-rarity="rare"] strong,
 body.page-coins .card-summary .pill[data-rarity="rare"] strong{color:#c3b5ff;}
 body.page-account .card-summary .pill[data-rarity="epic"] strong,
 body.page-coins .card-summary .pill[data-rarity="epic"] strong{color:#fda4af;}
+body.page-account .plan-grid,
+body.page-coins .plan-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:12px;
+  margin:12px 0;
+}
+body.page-account .plan-card,
+body.page-coins .plan-card{
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:14px;
+  padding:12px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  background:rgba(6,18,32,0.8);
+}
+body.page-account .plan-card h4,
+body.page-coins .plan-card h4{
+  margin:0;
+  font-size:1rem;
+}
+body.page-account .plan-card ul,
+body.page-coins .plan-card ul{
+  margin:0;
+  padding-left:18px;
+  color:#9fbad8;
+  font-size:0.9rem;
+}
+body.page-account .plan-card .price-tag,
+body.page-coins .plan-card .price-tag{
+  font-weight:700;
+  font-size:0.95rem;
+}
+body.page-account .perk-list,
+body.page-coins .perk-list{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-top:12px;
+}
+body.page-account .perk-list li,
+body.page-coins .perk-list li{
+  list-style:none;
+  border:1px dashed rgba(255,255,255,0.1);
+  border-radius:10px;
+  padding:10px;
+  font-size:0.9rem;
+  color:#9fbad8;
+}
+body.page-account .sound-list,
+body.page-coins .sound-list{
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+body.page-account .sound-item,
+body.page-coins .sound-item{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:12px;
+  padding:12px;
+  flex-wrap:wrap;
+}
+body.page-account .sound-meta,
+body.page-coins .sound-meta{
+  flex:1;
+}
+body.page-account .sound-meta p,
+body.page-coins .sound-meta p{
+  margin:4px 0 0;
+  color:#9fbad8;
+  font-size:0.9rem;
+}
+body.page-account .sound-actions,
+body.page-coins .sound-actions{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
 body.page-account .goal-progress,
 body.page-coins .goal-progress{
   display:flex;
