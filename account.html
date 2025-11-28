@@ -103,6 +103,16 @@
           </div>
           <button id="activatePlan" class="btn primary" type="button">Activate paid plan (25 coins)</button>
         </div>
+        <div class="currency-level-card">
+          <div>
+            <p class="plan-label">Card level</p>
+            <div class="level-inline">
+              <span id="accountLevelBadge" class="level-badge">Lvl 1</span>
+              <p id="accountLevelHint" class="hint">Collect and trade cards to level up.</p>
+            </div>
+          </div>
+          <a class="btn ghost" href="carp-coins.html">Open card lab</a>
+        </div>
 
         <div class="currency-grid">
           <article class="currency-card">
@@ -274,6 +284,8 @@
       const goalTitleInput = document.getElementById('goalTitleInput');
       const goalDescInput = document.getElementById('goalDescInput');
       const goalTargetInput = document.getElementById('goalTargetInput');
+      const accountLevelBadge = document.getElementById('accountLevelBadge');
+      const accountLevelHint = document.getElementById('accountLevelHint');
       const tabButtons = Array.from(document.querySelectorAll('.tab-link'));
       const tabPanels = Array.from(document.querySelectorAll('.tab-panel'));
       const SUPABASE_URL = 'https://gjsjormootjwtrxwzhgc.supabase.co';
@@ -286,6 +298,9 @@
         history: 'carp.coins.history',
         plan: 'carp.coins.plan',
         goals: 'carp.coins.goals'
+      };
+      const CARD_STORAGE = {
+        level: 'carp.cards.level'
       };
       const ADMIN_SECRET = 'PicklePearCup';
       const PLAN_COST = 25;
@@ -327,6 +342,11 @@
         } catch (err) {
           console.error('Storage write failed', err);
         }
+      }
+
+      function getCardLevelValue() {
+        const value = Number(localStorage.getItem(CARD_STORAGE.level));
+        return Number.isFinite(value) && value > 0 ? value : 1;
       }
 
       function getCoinBalance() {
@@ -404,7 +424,8 @@
           lastName: account.lastName || '',
           username: account.username || '',
           email: account.email || '',
-          avatar: account.avatar || null
+          avatar: account.avatar || null,
+          level: account.level || null
         };
       }
 
@@ -416,7 +437,8 @@
           lastName: record.lastName || record.last_name || '',
           username: record.username || '',
           email: record.email || '',
-          avatar: record.avatar || null
+          avatar: record.avatar || null,
+          level: Number(record.level) || record.level || null
         };
       }
 
@@ -461,7 +483,7 @@
         try {
           const { data, error } = await supabaseClient
             .from(SUPABASE_TABLE)
-            .select('id, firstName, lastName, username, email, avatar')
+            .select('id, firstName, lastName, username, email, avatar, level')
             .order('username', { ascending: true })
             .limit(100);
           if (error) throw error;
@@ -607,7 +629,15 @@
 
           const title = document.createElement('div');
           title.className = 'account-entry-name';
-          title.textContent = getAccountLabel(account);
+          const name = document.createElement('span');
+          name.textContent = getAccountLabel(account);
+          title.appendChild(name);
+          if (account.level) {
+            const badge = document.createElement('span');
+            badge.className = 'level-tag';
+            badge.textContent = 'Lvl ' + account.level;
+            title.appendChild(badge);
+          }
 
           const meta = document.createElement('div');
           meta.className = 'account-entry-meta';
@@ -820,6 +850,13 @@
           activatePlanBtn.textContent = active ? 'Paid plan active' : `Activate paid plan (${PLAN_COST} coins)`;
           activatePlanBtn.disabled = active;
         }
+        const level = getCardLevelValue();
+        if (accountLevelBadge) {
+          accountLevelBadge.textContent = `Lvl ${level}`;
+        }
+        if (accountLevelHint) {
+          accountLevelHint.textContent = level > 1 ? `You are sharing level ${level}. Keep trading cards to climb.` : 'Collect and trade cards to unlock level perks.';
+        }
         renderCoinHistory();
         renderAdminHistory();
         renderGoalSection();
@@ -974,6 +1011,10 @@
         }
 
         if (savedAccount) {
+          if (!savedAccount.level) {
+            savedAccount.level = getCardLevelValue();
+            writeStorage(storageKeys.account, savedAccount);
+          }
           accountForm.firstName.value = savedAccount.firstName || '';
           accountForm.lastName.value = savedAccount.lastName || '';
           accountForm.username.value = savedAccount.username || '';
@@ -1024,7 +1065,8 @@
           firstName: formData.get('firstName').trim(),
           lastName: formData.get('lastName').trim(),
           username: formData.get('username').trim(),
-          email: formData.get('email').trim()
+          email: formData.get('email').trim(),
+          level: getCardLevelValue()
         };
         account.id = getAccountId(account);
 

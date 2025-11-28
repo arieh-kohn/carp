@@ -195,7 +195,8 @@
   <script>
     (function () {
       const storageKeys = {
-        account: 'social.account'
+        account: 'social.account',
+        accountsDb: 'social.accounts'
       };
       const COIN_STORAGE = {
         balance: 'carp.coins.balance',
@@ -209,6 +210,7 @@
         collection: 'carp.cards.collection',
         history: 'carp.cards.history'
       };
+      const SOUND_STORAGE = 'carp.soundboard.unlocks';
       const ADMIN_SECRET = 'PicklePearCup';
       const PLAN_COST = 25;
       const PLAN_DURATION_MS = 30 * 24 * 60 * 60 * 1000;
@@ -218,6 +220,7 @@
         rare: { label: 'Rare', weight: 30, color: '#c3b5ff' },
         epic: { label: 'Epic', weight: 10, color: '#fda4af' }
       };
+      const RARITY_ORDER = { epic: 3, rare: 2, common: 1 };
       const CARD_LIBRARY = [
         { id: 'spark-minnow', name: 'Spark Minnow', rarity: 'common' },
         { id: 'meadow-fry', name: 'Meadow Fry', rarity: 'common' },
@@ -239,6 +242,13 @@
         rare: { cost: 3, label: 'Trade 3 rares' },
         epic: { cost: 1, label: 'Trade 1 epic' }
       };
+      const SOUND_CATALOG = [
+        { id: 'chime', name: 'Lucky Chime', description: 'Soft bell accent.', frequency: 660 },
+        { id: 'laser', name: 'Neon Laser', description: 'Quick synth zap.', frequency: 920 },
+        { id: 'drip', name: 'Pixel Drip', description: 'Retro drop sound.', frequency: 520 },
+        { id: 'gong', name: 'Mini Gong', description: 'Short metallic hit.', frequency: 440 },
+        { id: 'sparkle', name: 'Sparkle Sweep', description: 'Rising shimmer.', frequency: 780 }
+      ];
       let adminUnlocked = false;
 
       const coinBalanceEl = document.getElementById('coinBalance');
@@ -454,6 +464,115 @@
         writeGoals(data);
       }
 
+      function getCardLevel() {
+        const value = Number(localStorage.getItem(CARD_STORAGE.level));
+        return Number.isFinite(value) && value > 0 ? value : 1;
+      }
+
+      function setCardLevel(level) {
+        localStorage.setItem(CARD_STORAGE.level, String(level));
+      }
+
+      function readCardCollection() {
+        return readStorage(CARD_STORAGE.collection, {});
+      }
+
+      function writeCardCollection(map) {
+        writeStorage(CARD_STORAGE.collection, map);
+      }
+
+      function addCardsToCollection(cards) {
+        const collection = readCardCollection();
+        cards.forEach((card) => {
+          collection[card.id] = (collection[card.id] || 0) + 1;
+        });
+        writeCardCollection(collection);
+      }
+
+      function summariseCollection() {
+        const collection = readCardCollection();
+        const totals = { common: 0, rare: 0, epic: 0 };
+        const entries = Object.entries(collection).map(([id, count]) => {
+          const card = CARD_LOOKUP[id];
+          if (card) {
+            totals[card.rarity] += count;
+            return { ...card, count };
+          }
+          return null;
+        }).filter(Boolean);
+        return { totals, entries };
+      }
+
+      function readCardHistory() {
+        return readStorage(CARD_STORAGE.history, []);
+      }
+
+      function writeCardHistory(history) {
+        writeStorage(CARD_STORAGE.history, history.slice(-30));
+      }
+
+      function addCardHistoryEntry(entry) {
+        const history = readCardHistory();
+        history.push({
+          id: 'card-' + Date.now() + '-' + Math.random().toString(16).slice(2),
+          timestamp: Date.now(),
+          ...entry
+        });
+        writeCardHistory(history);
+      }
+
+      function drawRandomCard() {
+        const roll = Math.random() * CARD_TOTAL_WEIGHT;
+        let cumulative = 0;
+        let rarity = 'common';
+        Object.entries(CARD_RARITIES).some(([key, info]) => {
+          cumulative += info.weight;
+          if (roll <= cumulative) {
+            rarity = key;
+            return true;
+          }
+          return false;
+        });
+        const pool = CARD_LIBRARY.filter((card) => card.rarity === rarity);
+        return pool[Math.floor(Math.random() * pool.length)];
+      }
+
+      function removeCardsOfRarity(rarity, amount) {
+        const collection = readCardCollection();
+        let remaining = amount;
+        Object.keys(collection).forEach((id) => {
+          const card = CARD_LOOKUP[id];
+          if (!card || card.rarity !== rarity || remaining <= 0) return;
+          const use = Math.min(collection[id], remaining);
+          collection[id] -= use;
+          remaining -= use;
+          if (collection[id] <= 0) {
+            delete collection[id];
+          }
+        });
+        if (remaining > 0) {
+          throw new Error('Not enough cards to trade.');
+        }
+        writeCardCollection(collection);
+      }
+
+      function syncAccountLevel(level) {
+        const account = readStorage(storageKeys.account, null);
+        if (account) {
+          const key = (account.id || account.email || account.username || '').trim().toLowerCase();
+          if (key) {
+            account.id = key;
+          }
+          account.level = level;
+          writeStorage(storageKeys.account, account);
+          const db = readStorage(storageKeys.accountsDb, {});
+          if (key) {
+            db[key] = { ...(db[key] || {}), ...account };
+            writeStorage(storageKeys.accountsDb, db);
+          }
+        }
+      }
+
       function updateCoinBalance(amount) {
         setCoinBalance(amount);
         renderCurrencyUI();
@@ -608,6 +727,78 @@
             goalHistoryList.appendChild(li);
           });
         }
+      }
+
+      function renderCardSection() {
+        if (packCostLabel) {
+          packCostLabel.textContent = CARD_PACK_COST;
+        }
+        renderCardSummary();
+        renderCardHistory();
+        const level = getCardLevel();
+        if (cardLevelBadge) {
+          cardLevelBadge.textContent = `Lvl ${level}`;
+        }
+        if (cardLevelSubtitle) {
+          cardLevelSubtitle.textContent = `Trade cards to reach level ${level + 1}. Your current level appears anywhere your account is shown.`;
+        }
+        levelButtons.forEach((btn) => {
+          const rarity = btn.dataset.trade;
+          const rule = LEVEL_RULES[rarity];
+          const summary = summariseCollection();
+          const owns = summary.totals[rarity] || 0;
+          btn.disabled = owns < rule.cost;
+          btn.textContent = `${rule.label} (${owns}/${rule.cost})`;
+        });
+      }
+
+      function renderCardSummary() {
+        if (!cardSummary || !cardCollectionList) return;
+        const summary = summariseCollection();
+        const pieces = Object.entries(summary.totals).map(([rarity, count]) => {
+          return `<span class="pill" data-rarity="${rarity}">${CARD_RARITIES[rarity].label}: <strong>${count}</strong></span>`;
+        });
+        cardSummary.innerHTML = pieces.join(' ');
+        cardCollectionList.innerHTML = '';
+        if (!summary.entries.length) {
+          const li = document.createElement('li');
+          li.className = 'hint';
+          li.textContent = 'No cards yet. Buy a pack!';
+          cardCollectionList.appendChild(li);
+          return;
+        }
+        summary.entries
+          .sort((a, b) => (RARITY_ORDER[b.rarity] - RARITY_ORDER[a.rarity]) || (b.count - a.count) || a.name.localeCompare(b.name))
+          .slice(0, 6)
+          .forEach((entry) => {
+            const li = document.createElement('li');
+            li.innerHTML = `<span>${entry.name} (${CARD_RARITIES[entry.rarity].label})</span><strong>x${entry.count}</strong>`;
+            cardCollectionList.appendChild(li);
+          });
+      }
+
+      function renderCardHistory() {
+        if (!cardHistoryList) return;
+        const history = readCardHistory().slice().reverse();
+        cardHistoryList.innerHTML = '';
+        if (!history.length) {
+          const li = document.createElement('li');
+          li.className = 'hint';
+          li.textContent = 'No card events yet.';
+          cardHistoryList.appendChild(li);
+          return;
+        }
+        history.slice(0, 6).forEach((entry) => {
+          const li = document.createElement('li');
+          if (entry.type === 'pack') {
+            li.innerHTML = `<strong>Pack</strong> <span>${entry.cards.map((card) => card.name).join(', ')}</span>`;
+          } else if (entry.type === 'level') {
+            li.innerHTML = `<strong>Level ${entry.level}</strong> <span>${entry.note || 'Level up!'}</span>`;
+          } else {
+            li.innerHTML = `<strong>${entry.type}</strong> <span>${entry.note || ''}</span>`;
+          }
+          cardHistoryList.appendChild(li);
+        });
       }
 
       function createCodeRecord(code, payload) {
@@ -783,7 +974,48 @@
         setStatus('Goal cleared.');
       });
 
+      buyPackBtn?.addEventListener('click', () => {
+        try {
+          debitCoins(CARD_PACK_COST, { type: 'cards', note: 'Bought card pack', message: `-${CARD_PACK_COST} CC` });
+        } catch (err) {
+          setStatus('Need more coins to buy a pack.', true);
+          return;
+        }
+        const cards = Array.from({ length: 5 }, () => drawRandomCard());
+        addCardsToCollection(cards);
+        addCardHistoryEntry({ type: 'pack', cards });
+        if (packResult) {
+          packResult.textContent = 'Pulled: ' + cards.map((card) => `${card.name} (${CARD_RARITIES[card.rarity].label})`).join(', ');
+        }
+        setStatus('Pack opened!');
+        renderCardSection();
+      });
+
+      levelButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const rarity = btn.dataset.trade;
+          const rule = LEVEL_RULES[rarity];
+          const summary = summariseCollection();
+          if ((summary.totals[rarity] || 0) < rule.cost) {
+            return;
+          }
+          try {
+            removeCardsOfRarity(rarity, rule.cost);
+          } catch (err) {
+            setStatus(err.message, true);
+            return;
+          }
+          const nextLevel = getCardLevel() + 1;
+          setCardLevel(nextLevel);
+          syncAccountLevel(nextLevel);
+          addCardHistoryEntry({ type: 'level', level: nextLevel, note: `Used ${rule.label}` });
+          setStatus(`Level up! You're now level ${nextLevel}.`);
+          renderCardSection();
+        });
+      });
+
       renderCurrencyUI();
+      renderCardSection();
     })();
   </script>
 </body>

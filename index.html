@@ -11,6 +11,7 @@
   <div class="page">
     <div class="topbar">
       <a class="top-btn" href="account.html">acount mange ment</a>
+      <a class="top-btn" href="carp-coins.html">trading cards</a>
       <a class="top-btn" href="social.html">social feed</a>
       <a class="top-btn" href="carpai.html">carp ai</a>
       <a class="top-btn" href="carp-coins.html">carp coins</a>
@@ -21,7 +22,10 @@
 
     <section class="big-banner" aria-hidden="false">
       <div class="big-top">welcome to carp</div>
-      <div class="big-bottom" id="bannerMessage">make a acount</div>
+      <div class="big-bottom">
+        <span id="bannerMessage">make a acount</span>
+        <span class="level-pill" id="homeLevelPill" hidden>Lvl 1</span>
+      </div>
     </section>
 
     <div class="bottom-row" aria-label="five small banners">
@@ -38,9 +42,15 @@
         const saved = localStorage.getItem('social.account');
         if (!saved) return;
         const account = JSON.parse(saved);
-        if (account && (account.username || account.email)) {
-          const banner = document.getElementById('bannerMessage');
-          if (banner) banner.textContent = 'have a good time';
+        const banner = document.getElementById('bannerMessage');
+        if (account && (account.username || account.email) && banner) {
+          banner.textContent = 'have a good time';
+        }
+        const levelValue = Number(localStorage.getItem('carp.cards.level'));
+        const pill = document.getElementById('homeLevelPill');
+        if (pill && Number.isFinite(levelValue) && levelValue > 1) {
+          pill.hidden = false;
+          pill.textContent = 'Lvl ' + levelValue;
         }
       } catch (err) {
         console.error('Account detection failed', err);

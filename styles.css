@@ -266,6 +266,15 @@ body.page-home .big-top, body.page-home .big-bottom{
 }
 body.page-home .big-top{font-weight:900;font-size:clamp(20px,5vw,56px);color:#07121f;background:linear-gradient(180deg,rgba(255,255,255,0.35),transparent);}
 body.page-home .big-bottom{font-weight:800;font-size:clamp(20px,4.2vw,48px);color:#f4fbff;background:linear-gradient(180deg,rgba(5,11,25,0.28),transparent)}
+body.page-home .big-bottom{gap:12px;}
+body.page-home .level-pill{
+  font-size:0.5em;
+  border-radius:999px;
+  padding:6px 14px;
+  background:rgba(255,255,255,0.18);
+  text-transform:uppercase;
+  letter-spacing:0.3em;
+}
 
 body.page-home .bottom-row{
   flex:0 0 40vh;
@@ -431,6 +440,12 @@ body.page-account .btn.subtle{
   padding:8px 16px;
   border:1px solid rgba(255,255,255,0.08);
 }
+body.page-account .btn.ghost{
+  background:transparent;
+  color:#9fc9eb;
+  border:1px dashed rgba(159,201,235,0.5);
+  padding:8px 16px;
+}
 body.page-account .btn.tertiary{
   background:transparent;
   color:#9fc9eb;
@@ -567,6 +582,30 @@ body.page-account .plan-badge.is-paid,
 body.page-coins .plan-badge.is-paid{
   background:rgba(34,197,94,0.2);
   color:#bbf7d0;
+}
+body.page-account .currency-level-card{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:16px;
+  border-radius:14px;
+  border:1px dashed rgba(148,191,224,0.2);
+}
+body.page-account .level-inline{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+body.page-account .level-tag,
+body.page-coins .level-tag{
+  display:inline-flex;
+  align-items:center;
+  background:rgba(255,255,255,0.08);
+  border-radius:8px;
+  padding:2px 8px;
+  font-size:0.75rem;
+  margin-left:8px;
 }
 body.page-account .currency-grid,
 body.page-coins .currency-grid{
@@ -721,6 +760,19 @@ body.page-coins .card-list li{
   border-bottom:1px solid rgba(255,255,255,0.05);
   padding-bottom:6px;
 }
+body.page-account .card-summary,
+body.page-coins .card-summary{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:12px;
+}
+body.page-account .card-summary .pill[data-rarity="common"] strong,
+body.page-coins .card-summary .pill[data-rarity="common"] strong{color:#8fb0c9;}
+body.page-account .card-summary .pill[data-rarity="rare"] strong,
+body.page-coins .card-summary .pill[data-rarity="rare"] strong{color:#c3b5ff;}
+body.page-account .card-summary .pill[data-rarity="epic"] strong,
+body.page-coins .card-summary .pill[data-rarity="epic"] strong{color:#fda4af;}
 body.page-account .goal-progress,
 body.page-coins .goal-progress{
   display:flex;
@@ -817,6 +869,12 @@ body.page-account .account-entry-body{
   display:flex;
   flex-direction:column;
   gap:4px;
+}
+body.page-account .account-entry-name{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
 }
 body.page-account .account-entry-name{
   font-weight:700;
