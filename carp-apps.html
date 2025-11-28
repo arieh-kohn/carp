@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Carp Apps Hub</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="offline.js" defer></script>
+</head>
+<body class="page-apps">
+  <header class="apps-hero">
+    <div class="apps-hero__copy">
+      <p class="eyebrow">Utility Lab</p>
+      <h1>Carp Apps</h1>
+      <p class="subtitle">Download classroom-friendly mini apps: dev consoles, quick games, sandboxes, and study helpers.</p>
+      <div class="hero-actions">
+        <a class="btn primary" href="download.html">Offline setup</a>
+        <a class="btn ghost" href="/">Back to home</a>
+      </div>
+    </div>
+    <nav class="apps-nav" aria-label="Carp navigation">
+      <a class="chip" href="/">home</a>
+      <a class="chip" href="carpfish.html">games</a>
+      <a class="chip" href="social.html">social</a>
+      <a class="chip" href="carpai.html">carp ai</a>
+      <a class="chip is-active" aria-current="page" href="carp-apps.html">carp apps</a>
+    </nav>
+  </header>
+
+  <main class="apps-layout">
+    <section class="apps-gallery" id="appsGallery" aria-live="polite">
+      <div class="muted" data-loading-state>Loading Carp apps…</div>
+    </section>
+
+    <aside class="apps-sidebar card">
+      <h2>How downloads work</h2>
+      <ol>
+        <li>Pick any app and hit <strong>Download mini app</strong>.</li>
+        <li>Your browser saves a tiny <code>.html</code> file you can double-click offline.</li>
+        <li>Use <strong>Launch in browser</strong> for a quick preview tab.</li>
+      </ol>
+      <p class="hint">Need the entire site cached? Use the Offline Setup button at the top.</p>
+      <p class="status-line" data-app-status>Ready to package tools.</p>
+    </aside>
+  </main>
+
+  <script src="carpapps.js" defer></script>
+</body>
+</html>

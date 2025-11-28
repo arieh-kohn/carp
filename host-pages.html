@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Host Pages - Carp Frames</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="offline.js" defer></script>
+</head>
+<body class="page-host">
+  <header class="host-hero">
+    <div class="host-hero__copy">
+      <p class="eyebrow">sandbox iframes</p>
+      <h1>Host Pages</h1>
+      <p class="subtitle">Drop any https link and we'll pin it as an iframe so you can jump back fast.</p>
+      <ul>
+        <li>Works best with static HTML tools, apps and mirrors.</li>
+        <li>Some sites block embedding; you'll see an error if they do.</li>
+        <li>Everything is saved locally in your browser.</li>
+      </ul>
+    </div>
+    <nav class="host-nav" aria-label="Carp navigation">
+      <a class="chip" href="/">home</a>
+      <a class="chip" href="carpfish.html">games</a>
+      <a class="chip" href="social.html">social</a>
+      <a class="chip" href="carpai.html">carp ai</a>
+      <a class="chip" href="carp-apps.html">carp apps</a>
+      <a class="chip is-active" aria-current="page" href="host-pages.html">host pages</a>
+      <a class="chip" href="settings.html">settings</a>
+    </nav>
+  </header>
+
+  <main class="host-layout">
+    <section class="host-form card">
+      <h2>Add a hosted page</h2>
+      <form id="hostForm" autocomplete="off">
+        <label>
+          <span>Title</span>
+          <input type="text" id="hostTitle" maxlength="60" placeholder="Drive Mad mirror, Dev console, etc." />
+        </label>
+        <label>
+          <span>URL</span>
+          <input type="url" id="hostUrl" required placeholder="https://example.com/tool" />
+        </label>
+        <button class="btn primary" type="submit">Save + iframe it</button>
+        <p class="hint" id="hostHint">We auto-add https:// if you forget it.</p>
+      </form>
+    </section>
+
+    <section class="host-list card" aria-live="polite">
+      <header class="host-list__header">
+        <div>
+          <h2>Saved sites</h2>
+          <p class="muted">Pinned in localStorage so they stay after refresh.</p>
+        </div>
+        <button class="btn ghost" id="clearHostPages" type="button">Clear all</button>
+      </header>
+      <div id="hostGrid" class="host-grid">
+        <p class="muted" data-empty>Nothing saved yet. Add a link above.</p>
+      </div>
+      <p class="status-line" data-host-status>Standing by.</p>
+    </section>
+  </main>
+
+  <script src="hostpages.js" defer></script>
+</body>
+</html>

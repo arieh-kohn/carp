@@ -13,8 +13,14 @@
       <a class="page-link" href="/">Back</a>
     </header>
 
+    <nav class="account-tabs" role="tablist" aria-label="Account sections">
+      <button id="tab-account" class="tab-link is-active" type="button" role="tab" aria-selected="true" aria-controls="panel-account" data-tab="account">Profile</button>
+      <button id="tab-posts" class="tab-link" type="button" role="tab" aria-selected="false" aria-controls="panel-posts" data-tab="posts">Posts</button>
+      <button id="tab-directory" class="tab-link" type="button" role="tab" aria-selected="false" aria-controls="panel-directory" data-tab="directory">Directory</button>
+    </nav>
+
     <main class="account-main">
-      <section class="card account-form-card">
+      <section id="panel-account" class="card account-form-card tab-panel" data-tab-panel="account" role="tabpanel" aria-labelledby="tab-account">
         <h1>Create Your Account</h1>
         <p class="account-subtext">Complete the form so we can save your profile and posts.</p>
         <form id="accountForm" novalidate>
@@ -52,7 +58,7 @@
         </div>
       </section>
 
-      <section class="card account-posts-card" aria-live="polite">
+      <section id="panel-posts" class="card account-posts-card tab-panel" data-tab-panel="posts" role="tabpanel" aria-labelledby="tab-posts" hidden>
         <div class="posts-header">
           <h2>Your Posts</h2>
           <button id="clearPosts" class="btn subtle" type="button" disabled>Clear All</button>
@@ -68,7 +74,7 @@
         <p id="noPostsHint" class="hint">Create an account and start sharing to see your posts here.</p>
       </section>
 
-      <section class="card account-db-card" aria-live="polite">
+      <section id="panel-directory" class="card account-db-card tab-panel" data-tab-panel="directory" role="tabpanel" aria-labelledby="tab-directory" hidden>
         <div class="posts-header">
           <h2>Account Directory</h2>
           <button id="refreshAccounts" class="btn subtle" type="button">Refresh</button>
@@ -79,6 +85,7 @@
     </main>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.1/dist/umd/supabase.min.js" crossorigin="anonymous"></script>
   <script>
     (function () {
       const storageKeys = {
@@ -101,6 +108,30 @@
       const accountsList = document.getElementById('accountsList');
       const accountsEmpty = document.getElementById('accountsEmpty');
       const refreshAccountsBtn = document.getElementById('refreshAccounts');
+      const tabButtons = Array.from(document.querySelectorAll('.tab-link'));
+      const tabPanels = Array.from(document.querySelectorAll('.tab-panel'));
+      const SUPABASE_URL = 'https://gjsjormootjwtrywzhgc.supabase.co';
+      const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdqc2pvcm1vb3Rqd3RyeHd6aGdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQzMjUwMjEsImV4cCI6MjA3OTkwMTAyMX0.BalNqThpaYBuIWCWddlaa62z94RTq1NKaVIGwb_qncY';
+      const SUPABASE_TABLE = 'accounts';
+      const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+      function showTab(name) {
+        tabButtons.forEach(button => {
+          const isActive = button.dataset.tab === name;
+          button.classList.toggle('is-active', isActive);
+          button.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        });
+        tabPanels.forEach(panel => {
+          const isActive = panel.dataset.tabPanel === name;
+          panel.hidden = !isActive;
+          panel.setAttribute('aria-hidden', isActive ? 'false' : 'true');
+        });
+      }
+
+      tabButtons.forEach(button => {
+        button.addEventListener('click', () => showTab(button.dataset.tab));
+      });
+      showTab('account');
 
       function readStorage(key, fallback) {
         try {
@@ -118,6 +149,93 @@
           localStorage.setItem(key, JSON.stringify(value));
         } catch (err) {
           console.error('Storage write failed', err);
+        }
+      }
+
+      function supabaseReady() {
+        return Boolean(supabaseClient);
+      }
+
+      function serialiseAccountForCloud(account) {
+        if (!account) return null;
+        return {
+          id: account.id,
+          firstName: account.firstName || '',
+          lastName: account.lastName || '',
+          username: account.username || '',
+          email: account.email || '',
+          avatar: account.avatar || null
+        };
+      }
+
+      function hydrateAccountFromCloud(record) {
+        if (!record || !record.id) return null;
+        return {
+          id: record.id,
+          firstName: record.firstName || record.first_name || '',
+          lastName: record.lastName || record.last_name || '',
+          username: record.username || '',
+          email: record.email || '',
+          avatar: record.avatar || null
+        };
+      }
+
+      async function pushAccountToSupabase(account) {
+        if (!supabaseReady()) return false;
+        const payload = serialiseAccountForCloud(account);
+        if (!payload) return false;
+        const { error } = await supabaseClient
+          .from(SUPABASE_TABLE)
+          .upsert(payload, { onConflict: 'id' });
+        if (error) throw error;
+        return true;
+      }
+
+      async function syncDirectoryFromSupabase(options = {}) {
+        if (!supabaseReady()) return;
+        const { showStatus } = options;
+        if (showStatus && statusEl) {
+          statusEl.classList.remove('error');
+          statusEl.textContent = 'Syncing account directory...';
+        }
+        try {
+          const { data, error } = await supabaseClient
+            .from(SUPABASE_TABLE)
+            .select('id, firstName, lastName, username, email, avatar')
+            .order('username', { ascending: true })
+            .limit(100);
+          if (error) throw error;
+          const parsed = (data || [])
+            .map(hydrateAccountFromCloud)
+            .filter(Boolean);
+          if (!parsed.length) {
+            if (showStatus && statusEl) {
+              statusEl.textContent = 'No cloud accounts yet.';
+            }
+            return;
+          }
+          const merged = readAccountsDb();
+          let mutated = false;
+          parsed.forEach(account => {
+            const cached = merged[account.id];
+            if (!cached || JSON.stringify(cached) !== JSON.stringify(account)) {
+              merged[account.id] = account;
+              mutated = true;
+            }
+          });
+          if (mutated) {
+            writeStorage(storageKeys.accountsDb, merged);
+            renderAccountsList();
+          }
+          if (showStatus && statusEl) {
+            statusEl.textContent = 'Directory synced with Supabase.';
+          }
+        } catch (err) {
+          console.error('Supabase directory sync failed', err);
+          if (showStatus && statusEl) {
+            statusEl.classList.add('error');
+            statusEl.textContent = 'Could not refresh accounts from Supabase.';
+          }
         }
       }
 
@@ -346,6 +464,9 @@
         renderPosts(savedPosts);
         if (savedAccount && savedPosts.length) noPostsHint.hidden = true;
         renderAccountsList();
+        if (supabaseReady()) {
+          syncDirectoryFromSupabase();
+        }
       }
 
       accountForm.addEventListener('submit', async (event) => {
@@ -385,10 +506,24 @@
         writeStorage(storageKeys.account, account);
         updateAccountsDb(account);
         togglePostUI(true);
-        statusEl.textContent = 'Account saved. Hi, ' + getAccountLabel(account) + '!';
         renderProfilePreview(account);
         renderPosts(readStorage(storageKeys.posts, []));
         renderAccountsList();
+
+        let message = 'Account saved. Hi, ' + getAccountLabel(account) + '!';
+        if (supabaseReady()) {
+          try {
+            statusEl.textContent = 'Saving to Supabase...';
+            await pushAccountToSupabase(account);
+            await syncDirectoryFromSupabase();
+            message = 'Account saved & synced. Hi, ' + getAccountLabel(account) + '!';
+          } catch (err) {
+            console.error('Supabase sync failed', err);
+            statusEl.classList.add('error');
+            message = 'Saved locally, but Supabase sync failed.';
+          }
+        }
+        statusEl.textContent = message;
       });
 
       postForm.addEventListener('submit', (event) => {
@@ -434,7 +569,18 @@
       });
 
       if (refreshAccountsBtn) {
-        refreshAccountsBtn.addEventListener('click', () => renderAccountsList());
+        refreshAccountsBtn.addEventListener('click', async () => {
+          if (!supabaseReady()) {
+            renderAccountsList();
+            return;
+          }
+          refreshAccountsBtn.disabled = true;
+          try {
+            await syncDirectoryFromSupabase({ showStatus: true });
+          } finally {
+            refreshAccountsBtn.disabled = false;
+          }
+        });
       }
 
       initAccount();

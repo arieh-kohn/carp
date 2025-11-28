@@ -97,10 +97,17 @@
 
     restartBtn.addEventListener('click', () => { if (current && current.restart) current.restart(); else location.reload(); });
 
-    // Initialize list of available games
-    const GAMES = [];
+    const PLACEHOLDER_COUNT = 100;
+
+    // Placeholder entries to keep the grid size consistent
+    const GAMES = Array.from({ length: PLACEHOLDER_COUNT }, (_, index) => ({
+        id: `placeholder-${index + 1}`
+    }));
+
+    let placeholderMode = true;
 
     function registerGame(id, title, desc, builder) {
+        if (placeholderMode) return;
         GAMES.push({ id, title, desc, builder });
     }
 
@@ -113,6 +120,8 @@
     registerGame('flappy', 'Flappy', 'Navigate through pipes', buildFlappy);
     registerGame('bitlife', 'Life Sim', 'Life simulation game', buildLifeSim);
     registerGame('drive', 'Drive Mad', 'Endless driving game', buildDrive);
+    registerGame('drive3', 'Drive Mad 3', 'Community stunt tracks from drivemad3.io', buildDriveMad3);
+    registerGame('motox', 'Moto X3M', 'Physics bike trials from moto-x3m.net', buildMotoX3M);
     registerGame('basket', 'Basket Random', 'Chaotic 2v2 basketball duels', buildBasketRandom);
     registerGame('ancient', 'Ancient Beast', 'Creature battle strategy', buildAncient);
     registerGame('craft', 'Block Craft', 'Creative building game', buildCraft);
@@ -133,30 +142,17 @@
 
     // Initialize game list
     function renderGameList() {
+        const tiles = GAMES.map(() => `
+              <div class="tile tile-empty" aria-hidden="true"></div>
+            `).join('');
+
         listView.innerHTML = `
         <div class="container">
           <div class="grid">
-            ${GAMES.map(game => `
-              <div class="tile" data-game-id="${game.id}">
-                <div class="title">${game.title}</div>
-                <div class="desc">${game.desc}</div>
-              </div>
-            `).join('')}
+            ${tiles}
           </div>
         </div>
       `;
-
-        // Add click handlers
-        const tiles = listView.querySelectorAll('.tile');
-        tiles.forEach(tile => {
-            tile.addEventListener('click', () => {
-                const gameId = tile.dataset.gameId;
-                const game = GAMES.find(g => g.id === gameId);
-                if (game) {
-                    showGame(game.title, game.builder);
-                }
-            });
-        });
     }
 
     // Initial render
@@ -1654,6 +1650,76 @@
         };
     }
 
+    // ---------- Drive Mad 3 (external host) ----------
+    function buildDriveMad3(container, setScore) {
+        container.innerHTML = `
+        <div class="drive-wrapper">
+          <iframe
+            src="https://drivemad3.io/"
+            class="drive-frame"
+            title="Drive Mad 3"
+            allow="fullscreen"
+          ></iframe>
+          <div class="drive-help">
+            This loads directly from drivemad3.io, so you need internet access. Use Restart if the iframe hangs.
+          </div>
+        </div>
+      `;
+
+        const frame = container.querySelector('.drive-frame');
+        setScore('Drive Mad 3');
+
+        function reloadFrame() {
+            const url = frame.getAttribute('src');
+            frame.src = '';
+            frame.src = url;
+        }
+
+        return {
+            cleanup() {
+                frame.src = 'about:blank';
+            },
+            restart() {
+                reloadFrame();
+            }
+        };
+    }
+
+    // ---------- Moto X3M ----------
+    function buildMotoX3M(container, setScore) {
+        container.innerHTML = `
+        <div class="drive-wrapper">
+          <iframe
+            src="https://moto-x3m.net/"
+            class="drive-frame"
+            title="Moto X3M"
+            allow="fullscreen"
+          ></iframe>
+          <div class="drive-help">
+            Loads the official Moto X3M site. Needs internet; use Restart if it freezes.
+          </div>
+        </div>
+      `;
+
+        const frame = container.querySelector('.drive-frame');
+        setScore('Moto X3M');
+
+        function reloadFrame() {
+            const url = frame.getAttribute('src');
+            frame.src = '';
+            frame.src = url;
+        }
+
+        return {
+            cleanup() {
+                frame.src = 'about:blank';
+            },
+            restart() {
+                reloadFrame();
+            }
+        };
+    }
+
     // ---------- Basket Random ----------
     function buildBasketRandom(container, setScore) {
         container.innerHTML = `
@@ -1810,6 +1876,8 @@
     document.getElementById('tile-flappy').addEventListener('click', () => showGame('Flappy', buildFlappy));
     document.getElementById('tile-bitlife').addEventListener('click', () => showGame('Life Sim', buildLifeSim));
     document.getElementById('tile-drive').addEventListener('click', () => showGame('Drive Mad', buildDrive));
+    document.getElementById('tile-drive3').addEventListener('click', () => showGame('Drive Mad 3', buildDriveMad3));
+    document.getElementById('tile-motox').addEventListener('click', () => showGame('Moto X3M', buildMotoX3M));
     document.getElementById('tile-ancient').addEventListener('click', () => showGame('Ancient Beast', buildAncient));
     document.getElementById('tile-craft').addEventListener('click', () => showGame('Block Craft', buildCraft));
     document.getElementById('tile-runner').addEventListener('click', () => showGame('Temple Run', buildRunner));

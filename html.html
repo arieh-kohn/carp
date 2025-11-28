@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simple Unblocker</title>
+</head>
+<body>
+<h1>Website Unblocker</h1>
+<input type="text" id="url" placeholder="Enter URL to unblock">
+<button onclick="fetchContent()">Unblock</button>
+<div id="content"></div>
+<script>
+async function fetchContent() {
+const url = document.getElementById('url').value;
+const proxyUrl = 'https://cors-anywhere.herokuapp.com/'; // Example proxy
+const response = await fetch(proxyUrl + url);
+const data = await response.text();
+document.getElementById('content').innerHTML = data;
+}
+</script>
+</body>
+</html>
