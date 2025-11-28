@@ -17,6 +17,7 @@
       <button id="tab-account" class="tab-link is-active" type="button" role="tab" aria-selected="true" aria-controls="panel-account" data-tab="account">Profile</button>
       <button id="tab-posts" class="tab-link" type="button" role="tab" aria-selected="false" aria-controls="panel-posts" data-tab="posts">Posts</button>
       <button id="tab-directory" class="tab-link" type="button" role="tab" aria-selected="false" aria-controls="panel-directory" data-tab="directory">Directory</button>
+      <button id="tab-currency" class="tab-link" type="button" role="tab" aria-selected="false" aria-controls="panel-currency" data-tab="currency">Currency</button>
     </nav>
 
     <main class="account-main">
@@ -82,6 +83,136 @@
         <ul id="accountsList" class="account-list" aria-label="Accounts"></ul>
         <p id="accountsEmpty" class="hint">No accounts stored yet.</p>
       </section>
+
+      <section id="panel-currency" class="card currency-panel tab-panel" data-tab-panel="currency" role="tabpanel" aria-labelledby="tab-currency" hidden>
+        <div class="currency-header">
+          <div>
+            <h2>Carp Coins Wallet</h2>
+            <p class="currency-subtitle">Redeem codes, share coins, and manage your plan.</p>
+          </div>
+          <div class="currency-balance">
+            <span>Balance</span>
+            <strong id="coinBalance">0</strong>
+          </div>
+        </div>
+        <div class="currency-plan">
+          <div>
+            <p class="plan-label">Plan</p>
+            <strong id="planBadge" class="plan-badge">Free</strong>
+            <p id="planHint" class="hint">Free plan cannot post.</p>
+          </div>
+          <button id="activatePlan" class="btn primary" type="button">Activate paid plan (25 coins)</button>
+        </div>
+
+        <div class="currency-grid">
+          <article class="currency-card">
+            <h3>Redeem code</h3>
+            <form id="redeemForm" autocomplete="off">
+              <label>
+                <span>Gift / admin code</span>
+                <input type="text" id="redeemCode" required placeholder="Enter code e.g. carp-123" />
+              </label>
+              <button class="btn primary" type="submit">Redeem coins</button>
+            </form>
+            <p id="redeemStatus" class="hint" aria-live="polite"></p>
+          </article>
+
+          <article class="currency-card">
+            <h3>Send coins (shareable code)</h3>
+            <form id="sendForm" autocomplete="off">
+              <label>
+                <span>Amount</span>
+                <input type="number" id="sendAmount" min="1" required />
+              </label>
+              <label>
+                <span>Note (optional)</span>
+                <input type="text" id="sendNote" maxlength="60" placeholder="For Jamal" />
+              </label>
+              <button class="btn secondary" type="submit">Create share code</button>
+            </form>
+            <div id="sendResult" class="send-result" aria-live="polite"></div>
+          </article>
+        </div>
+
+        <article class="currency-card admin-card">
+          <div class="admin-card__header">
+            <h3>Admin minting</h3>
+            <button id="adminUnlock" class="btn tertiary" type="button">Enter admin code</button>
+          </div>
+          <form id="adminUnlockForm" class="inline-form" hidden>
+            <label>
+              <span>Admin code</span>
+              <input type="password" id="adminSecretInput" autocomplete="off" />
+            </label>
+            <button class="btn primary" type="submit">Unlock</button>
+          </form>
+          <div id="adminPanel" hidden>
+            <p class="hint">Generate unique codes to share with students.</p>
+            <form id="adminMintForm" autocomplete="off">
+              <label>
+                <span>Custom code</span>
+                <input type="text" id="adminCodeInput" required placeholder="Example: fieldtrip-01" />
+              </label>
+            <label>
+              <span>Coins to grant</span>
+              <input type="number" id="adminAmountInput" min="1" required />
+            </label>
+            <button class="btn primary" type="submit">Create claim code</button>
+          </form>
+          <form id="adminGoalForm" class="goal-form" autocomplete="off">
+            <h4>Create community goal</h4>
+            <label>
+              <span>Goal title</span>
+              <input type="text" id="goalTitleInput" required maxlength="60" placeholder="Unlock new theme" />
+            </label>
+            <label>
+              <span>Description</span>
+              <textarea id="goalDescInput" rows="2" maxlength="180" placeholder="Describe the reward"></textarea>
+            </label>
+            <label>
+              <span>Target coins</span>
+              <input type="number" id="goalTargetInput" min="10" required />
+            </label>
+            <button class="btn secondary" type="submit">Launch goal</button>
+          </form>
+          <ul id="adminHistory" class="code-list" aria-live="polite"></ul>
+        </div>
+      </article>
+
+      <article class="currency-card goal-card">
+        <div class="goal-header">
+          <div>
+            <h3>Community goal</h3>
+            <p id="goalStatus" class="hint">No goal yet.</p>
+          </div>
+          <button id="resetGoalBtn" class="btn subtle" type="button">Clear goal</button>
+        </div>
+        <div id="goalEmpty" class="hint">Admins can set a goal in the panel above.</div>
+        <div id="goalActive" hidden>
+          <h4 id="goalTitleDisplay"></h4>
+          <p id="goalDescDisplay" class="muted"></p>
+          <div class="goal-progress">
+            <div class="goal-progress__bar">
+              <div id="goalProgressBar"></div>
+            </div>
+            <p id="goalProgressLabel"></p>
+          </div>
+          <form id="goalContributeForm" class="inline-form" autocomplete="off">
+            <label>
+              <span>Coins to contribute</span>
+              <input type="number" id="goalAmountInput" min="1" required />
+            </label>
+            <button class="btn primary" type="submit">Contribute</button>
+          </form>
+        </div>
+        <ul id="goalHistory" class="code-list"></ul>
+      </article>
+
+        <article class="currency-card">
+          <h3>Wallet activity</h3>
+          <ul id="coinHistory" class="code-list" aria-live="polite"></ul>
+        </article>
+      </section>
     </main>
   </div>
 
@@ -108,12 +239,58 @@
       const accountsList = document.getElementById('accountsList');
       const accountsEmpty = document.getElementById('accountsEmpty');
       const refreshAccountsBtn = document.getElementById('refreshAccounts');
+      const coinBalanceEl = document.getElementById('coinBalance');
+      const planBadge = document.getElementById('planBadge');
+      const planHint = document.getElementById('planHint');
+      const activatePlanBtn = document.getElementById('activatePlan');
+      const redeemForm = document.getElementById('redeemForm');
+      const redeemInput = document.getElementById('redeemCode');
+      const redeemStatus = document.getElementById('redeemStatus');
+      const sendForm = document.getElementById('sendForm');
+      const sendAmountInput = document.getElementById('sendAmount');
+      const sendNoteInput = document.getElementById('sendNote');
+      const sendResult = document.getElementById('sendResult');
+      const coinHistoryList = document.getElementById('coinHistory');
+      const adminUnlockBtn = document.getElementById('adminUnlock');
+      const adminUnlockForm = document.getElementById('adminUnlockForm');
+      const adminSecretInput = document.getElementById('adminSecretInput');
+      const adminPanel = document.getElementById('adminPanel');
+      const adminMintForm = document.getElementById('adminMintForm');
+      const adminCodeInput = document.getElementById('adminCodeInput');
+      const adminAmountInput = document.getElementById('adminAmountInput');
+      const adminGoalForm = document.getElementById('adminGoalForm');
+      const adminHistoryList = document.getElementById('adminHistory');
+      const goalStatus = document.getElementById('goalStatus');
+      const goalEmpty = document.getElementById('goalEmpty');
+      const goalActive = document.getElementById('goalActive');
+      const goalTitleDisplay = document.getElementById('goalTitleDisplay');
+      const goalDescDisplay = document.getElementById('goalDescDisplay');
+      const goalProgressBar = document.getElementById('goalProgressBar');
+      const goalProgressLabel = document.getElementById('goalProgressLabel');
+      const goalContributeForm = document.getElementById('goalContributeForm');
+      const goalAmountInput = document.getElementById('goalAmountInput');
+      const goalHistoryList = document.getElementById('goalHistory');
+      const resetGoalBtn = document.getElementById('resetGoalBtn');
+      const goalTitleInput = document.getElementById('goalTitleInput');
+      const goalDescInput = document.getElementById('goalDescInput');
+      const goalTargetInput = document.getElementById('goalTargetInput');
       const tabButtons = Array.from(document.querySelectorAll('.tab-link'));
       const tabPanels = Array.from(document.querySelectorAll('.tab-panel'));
-      const SUPABASE_URL = 'https://gjsjormootjwtrywzhgc.supabase.co';
+      const SUPABASE_URL = 'https://gjsjormootjwtrxwzhgc.supabase.co';
       const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdqc2pvcm1vb3Rqd3RyeHd6aGdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQzMjUwMjEsImV4cCI6MjA3OTkwMTAyMX0.BalNqThpaYBuIWCWddlaa62z94RTq1NKaVIGwb_qncY';
       const SUPABASE_TABLE = 'accounts';
       const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+      const COIN_STORAGE = {
+        balance: 'carp.coins.balance',
+        codes: 'carp.coins.codes',
+        history: 'carp.coins.history',
+        plan: 'carp.coins.plan',
+        goals: 'carp.coins.goals'
+      };
+      const ADMIN_SECRET = 'PicklePearCup';
+      const PLAN_COST = 25;
+      const PLAN_DURATION_MS = 30 * 24 * 60 * 60 * 1000;
+      let adminUnlocked = false;
 
       function showTab(name) {
         tabButtons.forEach(button => {
@@ -152,6 +329,69 @@
         }
       }
 
+      function getCoinBalance() {
+        const value = Number(localStorage.getItem(COIN_STORAGE.balance));
+        return Number.isFinite(value) ? value : 0;
+      }
+
+      function setCoinBalance(amount) {
+        localStorage.setItem(COIN_STORAGE.balance, String(Math.max(0, Math.floor(amount))));
+      }
+
+      function readCodes() {
+        return readStorage(COIN_STORAGE.codes, {});
+      }
+
+      function writeCodes(map) {
+        writeStorage(COIN_STORAGE.codes, map);
+      }
+
+      function readCoinHistory() {
+        return readStorage(COIN_STORAGE.history, []);
+      }
+
+      function writeCoinHistory(list) {
+        writeStorage(COIN_STORAGE.history, list.slice(-50));
+      }
+
+      function addHistoryEntry(entry) {
+        const history = readCoinHistory();
+        history.push({
+          id: 'hist-' + Date.now() + '-' + Math.random().toString(16).slice(2),
+          timestamp: Date.now(),
+          ...entry
+        });
+        writeCoinHistory(history);
+      }
+
+      function readPlanState() {
+        return readStorage(COIN_STORAGE.plan, null);
+      }
+
+      function writePlanState(state) {
+        writeStorage(COIN_STORAGE.plan, state);
+      }
+
+      function ensurePlanFresh() {
+        const plan = readPlanState();
+        if (plan && plan.paidUntil && plan.paidUntil > Date.now()) {
+          return plan;
+        }
+        if (plan) {
+          writePlanState(null);
+        }
+        return null;
+      }
+
+      function isPlanActive() {
+        const plan = ensurePlanFresh();
+        return Boolean(plan && plan.paidUntil && plan.paidUntil > Date.now());
+      }
+
+      function formatDate(ts) {
+        return new Date(ts).toLocaleString();
+      }
+
       function supabaseReady() {
         return Boolean(supabaseClient);
       }
@@ -178,6 +418,26 @@
           email: record.email || '',
           avatar: record.avatar || null
         };
+      }
+
+      function updateCoinBalance(amount) {
+        setCoinBalance(amount);
+        renderCurrencyUI();
+      }
+
+      function creditCoins(amount, meta) {
+        const balance = getCoinBalance();
+        const next = balance + amount;
+        updateCoinBalance(next);
+        addHistoryEntry({ type: meta?.type || 'credit', amount, delta: amount, note: meta?.note || '' });
+      }
+
+      function debitCoins(amount, meta) {
+        const balance = getCoinBalance();
+        if (amount > balance) throw new Error('Not enough coins');
+        const next = balance - amount;
+        updateCoinBalance(next);
+        addHistoryEntry({ type: meta?.type || 'debit', amount, delta: -amount, note: meta?.note || '' });
       }
 
       async function pushAccountToSupabase(account) {
@@ -262,15 +522,30 @@
       }
 
       function togglePostUI(enabled) {
-        postForm.hidden = !enabled;
-        clearPostsBtn.disabled = !enabled;
-        if (enabled) {
-          statusEl.classList.remove('error');
-          statusEl.textContent = 'Account ready! Start sharing below.';
-          if (!postList.children.length) {
-            noPostsHint.hidden = false;
-            noPostsHint.textContent = 'No posts yet. Share something to get started!';
+        const paid = isPlanActive();
+        const canPost = enabled && paid;
+        postForm.hidden = !canPost;
+        clearPostsBtn.disabled = !canPost;
+        if (!enabled) {
+          if (statusEl) {
+            statusEl.textContent = 'Create an account to unlock features.';
           }
+          return;
+        }
+        if (!paid) {
+          if (statusEl) {
+            statusEl.classList.add('error');
+            statusEl.textContent = 'Paid plan required to post. Open the Currency tab.';
+          }
+          noPostsHint.hidden = false;
+          noPostsHint.textContent = 'Upgrade to the paid plan (25 coins/month) to post.';
+          return;
+        }
+        statusEl.classList.remove('error');
+        statusEl.textContent = 'Account ready! Start sharing below.';
+        if (!postList.children.length) {
+          noPostsHint.hidden = false;
+          noPostsHint.textContent = 'No posts yet. Share something to get started!';
         }
       }
 
@@ -344,6 +619,278 @@
           li.appendChild(body);
           accountsList.appendChild(li);
         });
+      }
+
+      function normaliseCode(value) {
+        return (value || '').trim().toLowerCase();
+      }
+
+      function readGoals() {
+        const data = readStorage(COIN_STORAGE.goals, null);
+        if (!data || typeof data !== 'object') {
+          return { active: null, history: [] };
+        }
+        const active = data.active && typeof data.active === 'object' ? data.active : null;
+        const history = Array.isArray(data.history) ? data.history : [];
+        return { active, history };
+      }
+
+      function writeGoals(payload) {
+        writeStorage(COIN_STORAGE.goals, {
+          active: payload.active || null,
+          history: Array.isArray(payload.history) ? payload.history : []
+        });
+      }
+
+      function setActiveGoal(goal) {
+        const data = readGoals();
+        data.active = goal;
+        writeGoals(data);
+      }
+
+      function completeActiveGoal(note) {
+        const data = readGoals();
+        if (!data.active) return;
+        data.active.completedAt = Date.now();
+        if (note) data.active.note = note;
+        data.history.unshift(data.active);
+        data.active = null;
+        writeGoals(data);
+      }
+
+      function createCodeRecord(code, payload) {
+        const codes = readCodes();
+        if (codes[code]) {
+          throw new Error('Code already exists.');
+        }
+        codes[code] = {
+          amount: payload.amount,
+          type: payload.type,
+          note: payload.note || '',
+          createdAt: Date.now(),
+          createdBy: payload.createdBy || 'unknown',
+          redeemedAt: null,
+          redeemedBy: null
+        };
+        writeCodes(codes);
+        renderAdminHistory();
+        return codes[code];
+      }
+
+      function redeemStoredCode(rawCode, redeemer) {
+        const code = normaliseCode(rawCode);
+        const codes = readCodes();
+        const entry = codes[code];
+        if (!entry) {
+          throw new Error('Code not found.');
+        }
+        if (entry.redeemedAt) {
+          throw new Error('Code already used.');
+        }
+        creditCoins(entry.amount, { type: entry.type || 'code', note: `Redeemed ${code}` });
+        entry.redeemedAt = Date.now();
+        entry.redeemedBy = redeemer || 'Member';
+        codes[code] = entry;
+        writeCodes(codes);
+        renderAdminHistory();
+        return entry;
+      }
+
+      function createGoalRecord({ title, description, target }) {
+        const data = readGoals();
+        if (data.active) {
+          data.active.note = 'Replaced by new goal';
+          data.active.completedAt = Date.now();
+          data.history.unshift(data.active);
+        }
+        data.active = {
+          id: 'goal-' + Date.now(),
+          title,
+          description,
+          target,
+          raised: 0,
+          createdAt: Date.now(),
+          contributions: []
+        };
+        writeGoals(data);
+        return data.active;
+      }
+
+      function contributeToGoal(amount, contributor) {
+        const data = readGoals();
+        if (!data.active) {
+          throw new Error('No active goal.');
+        }
+        const goal = data.active;
+        goal.raised = (goal.raised || 0) + amount;
+        goal.contributions = Array.isArray(goal.contributions) ? goal.contributions : [];
+        goal.contributions.push({
+          amount,
+          contributor,
+          timestamp: Date.now()
+        });
+        let finished = false;
+        if (goal.raised >= goal.target) {
+          goal.raised = goal.target;
+          goal.completedAt = Date.now();
+          finished = true;
+          data.history.unshift(goal);
+          data.active = null;
+        } else {
+          data.active = goal;
+        }
+        writeGoals(data);
+        return { finished, goal };
+      }
+
+      function clearGoal(reason) {
+        const data = readGoals();
+        if (!data.active) return;
+        data.active.completedAt = Date.now();
+        data.active.note = reason || 'Cleared';
+        data.history.unshift(data.active);
+        data.active = null;
+        writeGoals(data);
+      }
+
+      function renderCoinHistory() {
+        if (!coinHistoryList) return;
+        const history = readCoinHistory().slice().reverse();
+        coinHistoryList.innerHTML = '';
+        if (!history.length) {
+          const li = document.createElement('li');
+          li.className = 'hint';
+          li.textContent = 'No wallet moves yet.';
+          coinHistoryList.appendChild(li);
+          return;
+        }
+        history.forEach((entry) => {
+          const li = document.createElement('li');
+          li.innerHTML = `<strong>${entry.delta > 0 ? '+' : ''}${entry.delta} CC</strong> <span>${entry.type || 'update'} · ${formatDate(entry.timestamp)}${entry.note ? ' — ' + entry.note : ''}</span>`;
+          coinHistoryList.appendChild(li);
+        });
+      }
+
+      function renderAdminHistory() {
+        if (!adminHistoryList) return;
+        const codes = Object.entries(readCodes()).sort((a, b) => {
+          return (b[1].createdAt || 0) - (a[1].createdAt || 0);
+        });
+        adminHistoryList.innerHTML = '';
+        if (!codes.length) {
+          const li = document.createElement('li');
+          li.className = 'hint';
+          li.textContent = 'No generated codes yet.';
+          adminHistoryList.appendChild(li);
+        } else {
+          codes.forEach(([code, meta]) => {
+            const li = document.createElement('li');
+            const status = meta.redeemedAt ? `Used ${formatDate(meta.redeemedAt)}` : 'Unclaimed';
+            li.innerHTML = `<strong>${code}</strong> <span>${meta.amount} CC · ${meta.type || 'code'} · ${status}</span>`;
+            adminHistoryList.appendChild(li);
+          });
+        }
+        const goalData = readGoals();
+        if (goalData.active) {
+          const li = document.createElement('li');
+          const percent = Math.min(100, Math.round((goalData.active.raised / goalData.active.target) * 100));
+          li.innerHTML = `<strong>Goal</strong> <span>${goalData.active.title} · ${percent}% funded</span>`;
+          adminHistoryList.appendChild(li);
+        }
+        goalData.history.slice(0, 3).forEach((goal) => {
+          const li = document.createElement('li');
+          const label = goal.completedAt ? `Finished ${formatDate(goal.completedAt)}` : 'Complete';
+          li.innerHTML = `<strong>${goal.title}</strong> <span>${goal.target} CC · ${label}</span>`;
+          adminHistoryList.appendChild(li);
+        });
+      }
+
+      function renderCurrencyUI() {
+        if (!coinBalanceEl) return;
+        const balance = getCoinBalance();
+        coinBalanceEl.textContent = balance;
+        const plan = ensurePlanFresh();
+        const active = Boolean(plan);
+        planBadge.textContent = active ? 'Paid' : 'Free';
+        planBadge.classList.toggle('is-paid', active);
+        if (planHint) {
+          planHint.textContent = active ? `Paid plan active until ${formatDate(plan.paidUntil)}.` : 'Free plan cannot post.';
+        }
+        if (activatePlanBtn) {
+          activatePlanBtn.textContent = active ? 'Paid plan active' : `Activate paid plan (${PLAN_COST} coins)`;
+          activatePlanBtn.disabled = active;
+        }
+        renderCoinHistory();
+        renderAdminHistory();
+        renderGoalSection();
+      }
+
+      function renderGoalSection() {
+        if (!goalStatus) return;
+        const data = readGoals();
+        const active = data.active;
+        goalEmpty.hidden = Boolean(active);
+        goalActive.hidden = !active;
+        if (!active) {
+          goalStatus.textContent = 'No goal yet.';
+          if (goalContributeForm) {
+            goalContributeForm.hidden = true;
+          }
+        } else {
+          goalStatus.textContent = 'Goal live!';
+          if (goalTitleDisplay) goalTitleDisplay.textContent = active.title;
+          if (goalDescDisplay) goalDescDisplay.textContent = active.description || 'Help reach the target.';
+          const percent = Math.min(100, Math.round((active.raised / active.target) * 100));
+          if (goalProgressBar) {
+            goalProgressBar.style.width = percent + '%';
+          }
+          if (goalProgressLabel) {
+            goalProgressLabel.textContent = `${active.raised} / ${active.target} coins (${percent}%)`;
+          }
+          if (goalContributeForm) {
+            goalContributeForm.hidden = false;
+          }
+        }
+        if (goalAmountInput) {
+          goalAmountInput.disabled = !active;
+        }
+        if (resetGoalBtn) {
+          resetGoalBtn.hidden = !adminUnlocked;
+          resetGoalBtn.disabled = !adminUnlocked || !active;
+        }
+        renderGoalHistoryList(active, data.history);
+      }
+
+      function renderGoalHistoryList(active, history) {
+        if (!goalHistoryList) return;
+        goalHistoryList.innerHTML = '';
+        if (active && Array.isArray(active.contributions) && active.contributions.length) {
+          active.contributions
+            .slice(-6)
+            .reverse()
+            .forEach((entry) => {
+              const li = document.createElement('li');
+              li.innerHTML = `<strong>${entry.amount} CC</strong> <span>${entry.contributor || 'Member'} · ${formatDate(entry.timestamp)}</span>`;
+              goalHistoryList.appendChild(li);
+            });
+        } else {
+          const li = document.createElement('li');
+          li.className = 'hint';
+          li.textContent = 'No contributions yet.';
+          goalHistoryList.appendChild(li);
+        }
+        if (history.length) {
+          const divider = document.createElement('li');
+          divider.className = 'hint';
+          divider.textContent = 'Past goals';
+          goalHistoryList.appendChild(divider);
+          history.slice(0, 3).forEach((goal) => {
+            const li = document.createElement('li');
+            const status = goal.completedAt ? `Finished ${formatDate(goal.completedAt)}` : 'Complete';
+            li.innerHTML = `<strong>${goal.title}</strong> <span>${goal.target} CC · ${status}</span>`;
+            goalHistoryList.appendChild(li);
+          });
+        }
       }
 
       function renderPosts(posts) {
@@ -467,6 +1014,7 @@
         if (supabaseReady()) {
           syncDirectoryFromSupabase();
         }
+        renderCurrencyUI();
       }
 
       accountForm.addEventListener('submit', async (event) => {
@@ -535,6 +1083,11 @@
           statusEl.classList.add('error');
           return;
         }
+        if (!isPlanActive()) {
+          statusEl.textContent = 'Paid plan required to post.';
+          statusEl.classList.add('error');
+          return;
+        }
 
         statusEl.classList.remove('error');
 
@@ -566,6 +1119,154 @@
         const remaining = posts.filter(post => (post.ownerId || accountId) !== accountId);
         writeStorage(storageKeys.posts, remaining);
         renderPosts(remaining);
+      });
+
+      activatePlanBtn?.addEventListener('click', () => {
+        if (isPlanActive()) return;
+        try {
+          debitCoins(PLAN_COST, { type: 'plan', note: 'Paid plan started' });
+        } catch (err) {
+          statusEl.classList.add('error');
+          statusEl.textContent = 'Need 25 coins to activate the paid plan.';
+          return;
+        }
+        writePlanState({ paidUntil: Date.now() + PLAN_DURATION_MS });
+        statusEl.classList.remove('error');
+        statusEl.textContent = 'Paid plan activated!';
+        renderCurrencyUI();
+        const hasAccount = Boolean(getAccountId(readStorage(storageKeys.account, null)));
+        togglePostUI(hasAccount);
+      });
+
+      redeemForm?.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const code = normaliseCode(redeemInput.value);
+        if (!code) return;
+        try {
+          const account = readStorage(storageKeys.account, null);
+          redeemStoredCode(code, getAccountLabel(account) || 'Member');
+          redeemStatus.textContent = `Redeemed ${code}!`;
+          redeemStatus.classList.remove('error');
+          redeemInput.value = '';
+        } catch (err) {
+          redeemStatus.textContent = err.message;
+          redeemStatus.classList.add('error');
+        }
+        renderCurrencyUI();
+      });
+
+      sendForm?.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const amount = Number(sendAmountInput.value);
+        if (!Number.isFinite(amount) || amount <= 0) return;
+        try {
+          debitCoins(amount, { type: 'send', note: 'Created share code' });
+        } catch (err) {
+          sendResult.textContent = 'Not enough coins.';
+          sendResult.classList.add('error');
+          return;
+        }
+        const note = (sendNoteInput.value || '').trim();
+        sendAmountInput.value = '';
+        sendNoteInput.value = '';
+        const code = 'carp-' + Math.random().toString(36).slice(2, 8);
+        createCodeRecord(normaliseCode(code), { amount, type: 'share', note, createdBy: 'wallet' });
+        sendResult.classList.remove('error');
+        sendResult.innerHTML = `Share this code: <strong>${code}</strong>`;
+        renderCurrencyUI();
+      });
+
+      adminUnlockBtn?.addEventListener('click', () => {
+        adminUnlockForm.hidden = !adminUnlockForm.hidden;
+      });
+
+      adminUnlockForm?.addEventListener('submit', (event) => {
+        event.preventDefault();
+        if (adminUnlocked) return;
+        if (adminSecretInput.value.trim() === ADMIN_SECRET) {
+          adminUnlocked = true;
+          adminPanel.hidden = false;
+          adminUnlockForm.hidden = true;
+          adminUnlockBtn.disabled = true;
+          renderAdminHistory();
+        } else {
+          adminSecretInput.value = '';
+          alert('Wrong admin code.');
+        }
+      });
+
+      adminMintForm?.addEventListener('submit', (event) => {
+        event.preventDefault();
+        if (!adminUnlocked) return;
+        const code = normaliseCode(adminCodeInput.value);
+        const amount = Number(adminAmountInput.value);
+        if (!code || !Number.isFinite(amount) || amount <= 0) return;
+        try {
+          createCodeRecord(code, { amount, type: 'admin', note: 'Minted', createdBy: 'admin' });
+          addHistoryEntry({ type: 'admin-mint', amount, delta: 0, note: `Code ${code}` });
+          adminCodeInput.value = '';
+          adminAmountInput.value = '';
+          renderAdminHistory();
+          alert(`Code ${code} ready for ${amount} coins.`);
+        } catch (err) {
+          alert(err.message);
+        }
+      });
+
+      adminGoalForm?.addEventListener('submit', (event) => {
+        event.preventDefault();
+        if (!adminUnlocked) {
+          alert('Unlock admin panel first.');
+          return;
+        }
+        const title = goalTitleInput.value.trim();
+        const description = goalDescInput.value.trim();
+        const target = Number(goalTargetInput.value);
+        if (!title || !Number.isFinite(target) || target <= 0) return;
+        createGoalRecord({ title, description, target });
+        goalTitleInput.value = '';
+        goalDescInput.value = '';
+        goalTargetInput.value = '';
+        renderCurrencyUI();
+        alert('Community goal launched!');
+      });
+
+      goalContributeForm?.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const amount = Number(goalAmountInput.value);
+        if (!Number.isFinite(amount) || amount <= 0) return;
+        try {
+          debitCoins(amount, { type: 'goal', note: 'Community contribution' });
+        } catch (err) {
+          if (statusEl) {
+            statusEl.classList.add('error');
+            statusEl.textContent = 'Not enough coins to contribute.';
+          }
+          return;
+        }
+        const account = readStorage(storageKeys.account, null);
+        const contributor = getAccountLabel(account) || 'Member';
+        try {
+          const result = contributeToGoal(amount, contributor);
+          goalAmountInput.value = '';
+          if (statusEl) {
+            statusEl.classList.remove('error');
+            statusEl.textContent = result.finished ? 'Goal complete! Thanks for contributing.' : 'Contribution added!';
+          }
+        } catch (err) {
+          if (statusEl) {
+            statusEl.classList.add('error');
+            statusEl.textContent = err.message;
+          }
+        }
+        renderCurrencyUI();
+      });
+
+      resetGoalBtn?.addEventListener('click', () => {
+        if (!adminUnlocked) return;
+        if (!confirm('Clear the current community goal?')) return;
+        clearGoal('Cleared by admin');
+        renderCurrencyUI();
       });
 
       if (refreshAccountsBtn) {

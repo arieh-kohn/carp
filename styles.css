@@ -431,6 +431,12 @@ body.page-account .btn.subtle{
   padding:8px 16px;
   border:1px solid rgba(255,255,255,0.08);
 }
+body.page-account .btn.tertiary{
+  background:transparent;
+  color:#9fc9eb;
+  border:1px dashed rgba(159,201,235,0.5);
+  padding:6px 14px;
+}
 body.page-account .btn.subtle[disabled]{
   opacity:0.4;
   cursor:not-allowed;
@@ -509,6 +515,276 @@ body.page-account .account-db-card{
   display:flex;
   flex-direction:column;
   gap:16px;
+}
+body.page-account .currency-panel,
+body.page-coins .currency-panel{
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+}
+body.page-account .currency-header,
+body.page-coins .currency-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:18px;
+}
+body.page-account .currency-balance,
+body.page-coins .currency-balance{
+  text-align:right;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+body.page-account .currency-balance strong,
+body.page-coins .currency-balance strong{
+  font-size:32px;
+}
+body.page-account .currency-plan,
+body.page-coins .currency-plan{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  padding:16px;
+  border-radius:14px;
+  background:rgba(8,25,40,0.6);
+  border:1px solid rgba(148,191,224,0.15);
+}
+body.page-account .plan-badge,
+body.page-coins .plan-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  border-radius:999px;
+  padding:6px 14px;
+  background:rgba(255,255,255,0.08);
+  text-transform:uppercase;
+  font-weight:700;
+  letter-spacing:0.4px;
+}
+body.page-account .plan-badge.is-paid,
+body.page-coins .plan-badge.is-paid{
+  background:rgba(34,197,94,0.2);
+  color:#bbf7d0;
+}
+body.page-account .currency-grid,
+body.page-coins .currency-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:16px;
+}
+body.page-account .currency-card,
+body.page-coins .currency-card{
+  background:rgba(8,28,44,0.8);
+  border-radius:16px;
+  padding:16px;
+  border:1px solid rgba(148,191,224,0.12);
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+body.page-account .currency-card label,
+body.page-coins .currency-card label{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  font-size:14px;
+}
+body.page-account .goal-header,
+body.page-coins .goal-header{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:flex-start;
+}
+body.page-account .currency-card input,
+body.page-coins .currency-card input{
+  background:rgba(3,16,28,0.8);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:10px;
+  padding:8px 10px;
+  color:#fff;
+}
+body.page-account .currency-card textarea,
+body.page-coins .currency-card textarea{
+  background:rgba(3,16,28,0.8);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:10px;
+  padding:10px;
+  color:#fff;
+  resize:vertical;
+  min-height:70px;
+}
+body.page-account .send-result,
+body.page-coins .send-result{
+  font-size:14px;
+  color:#7dd3fc;
+  word-break:break-all;
+}
+body.page-account .send-result.error,
+body.page-account #redeemStatus.error,
+body.page-coins .send-result.error,
+body.page-coins #redeemStatus.error{
+  color:#fda4af;
+}
+body.page-account .admin-card__header,
+body.page-coins .admin-card__header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+body.page-account .code-list,
+body.page-coins .code-list{
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+body.page-account .code-list li,
+body.page-coins .code-list li{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  font-size:13px;
+}
+body.page-account .code-list strong,
+body.page-coins .code-list strong{
+  font-family:monospace;
+}
+body.page-account .inline-form,
+body.page-coins .inline-form{
+  display:flex;
+  gap:12px;
+  align-items:flex-end;
+  flex-wrap:wrap;
+}
+body.page-account .pill,
+body.page-coins .pill{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  border-radius:999px;
+  padding:6px 12px;
+  background:rgba(255,255,255,0.08);
+  font-size:0.85rem;
+}
+body.page-account .level-badge,
+body.page-coins .level-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:12px;
+  padding:8px 16px;
+  background:linear-gradient(135deg,#38bdf8,#0ea5ff);
+  color:#031421;
+  font-weight:800;
+  letter-spacing:0.6px;
+}
+body.page-account .level-options,
+body.page-coins .level-options{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+body.page-account .card-pack__header,
+body.page-coins .card-pack__header,
+body.page-account .level-card__header,
+body.page-coins .level-card__header{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:flex-start;
+}
+body.page-account .pack-result,
+body.page-coins .pack-result{
+  min-height:32px;
+  font-size:0.95rem;
+  color:#7dd3fc;
+}
+body.page-account .card-list,
+body.page-coins .card-list{
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+body.page-account .card-list li,
+body.page-coins .card-list li{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+  padding-bottom:6px;
+}
+body.page-account .goal-progress,
+body.page-coins .goal-progress{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+body.page-account .goal-progress__bar,
+body.page-coins .goal-progress__bar{
+  width:100%;
+  height:10px;
+  border-radius:999px;
+  background:rgba(255,255,255,0.08);
+  overflow:hidden;
+}
+body.page-account .goal-progress__bar div,
+body.page-coins .goal-progress__bar div{
+  height:100%;
+  width:0%;
+  border-radius:999px;
+  background:linear-gradient(90deg,#22d3ee,#0ea5ff);
+  transition:width .2s ease;
+}
+body.page-account .goal-card h4,
+body.page-coins .goal-card h4{
+  margin:0;
+}
+body.page-account .goal-form h4,
+body.page-coins .goal-form h4{
+  margin:0;
+}
+
+body.page-coins{
+  min-height:100vh;
+  margin:0;
+  font-family:"Inter",system-ui,sans-serif;
+  background:linear-gradient(180deg,#020617,#041227);
+  color:#e6f1ff;
+  padding:32px 16px 60px;
+}
+.coins-hero{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:space-between;
+  gap:24px;
+  margin-bottom:24px;
+}
+.coins-hero__copy{
+  max-width:520px;
+}
+.coins-nav{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+.coins-shell{
+  max-width:960px;
+  margin:0 auto;
+}
+.coins-shell .card{
+  background:rgba(6,20,36,0.9);
+  border-radius:20px;
+  border:1px solid rgba(148,191,224,0.12);
+  box-shadow:0 26px 52px rgba(0,0,0,0.45);
+  padding:24px;
 }
 body.page-account .account-list{
   list-style:none;
